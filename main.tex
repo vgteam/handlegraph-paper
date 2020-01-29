@@ -2,8 +2,12 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \bibliographystyle{plain}
+\usepackage[ampersand]{easylist}
 
-\title{libbdsg and libhandlegraph: High-performance sequence graph implementations for graphical pangenomics}
+
+%\title{libbdsg and libhandlegraph: High-performance sequence graph implementations for graphical pangenomics}
+\title{Succinct dynamic sequence graphs} % for graphical pangenomics}
+  %libbdsg and libhandlegraph: High-performance sequence graph implementations for graphical pangenomics}
 \author{Jordan M. Eizenga \and Adam M. Novak \and Emily Kobayashi \and Cecilia Cisar \and Benedict Paten \and Erik Garrison}
 
 \newcommand{\vocab}{\textbf}
@@ -14,19 +18,68 @@
 
 \begin{abstract}
 
-Pangenomics is a growing field within computational genomics \cite{computational2016computational}. Many pangenomic analyses use bidirected sequence graphs as their core data model. However, implementing and correctly using this data model can be difficult, and the scale of pangenomic data sets can be challenging to work with. Here we present two C++ libraries with Python bindings, \texttt{libbdsg} and \texttt{libhandlegraph}. They provide a suite of high-performance sequence graph implementations, ready for use in user applications. Additionally, they share a simple, field-proven interface designed to prevent common graph manipulation mistakes.
+Pangenomics is a growing field within computational genomics.
+Many pangenomic analyses use bidirected sequence graphs as their core data model.
+However, implementing and correctly using this data model can be difficult, and the scale of pangenomic data sets can be challenging to work with.
+Here we present two C++ libraries with Python bindings, \texttt{libbdsg} and \texttt{libhandlegraph}, which share a simple, field-proven interface designed to expose elemental features of these graphs while preventing common graph manipulation mistakes.
+Through experiments with a diverse collection of pangenome graphs, we demonstrate that these tools allow for efficient construction and manipulation of large genome graphs with dense variation.
 
 \end{abstract}
 
 \section{Introduction}
 
-With falling sequencing costs, the genomics community has sequenced increasingly many individuals within certain species. For example, hundreds of thousands of deeply sequenced human genomes are now available. The novel challenges of analyzing data sets of this scale have led to the development of \vocab{computational pangenomics}: the analysis of populations of genomes rather than individuals.
+With falling sequencing costs, the genomics community has sequenced increasingly many individuals within certain species.
+For example, hundreds of thousands of deeply sequenced human genomes are now available.
+The novel challenges of analyzing data sets of this scale have led to the development of \vocab{computational pangenomics}, which focuses on the analysis of populations of genomes rather than individuals \cite{computational2016computational}.
 
-Much of the research in computational pangenomics has coalesced around graph-based approaches for representing populations of genomes. Unlike conventional string-based representations, graph data structures provide a modeling language to represent different types of genomic variation like substitutions, insertions, deletions, and more complex genomic events. 
+Much of the research in computational pangenomics has coalesced around graph-based approaches for representing populations of genomes \cite{Paten_2017}.
+Unlike conventional string-based representations, graph data structures provide a coherent modeling language to represent different types of genomic variation like substitutions, insertions, deletions, and more complex genomic events.
+They support the compact representation of many-way relationships, such as whole genome alignments, between related genomes \cite{kehr2014genome}.
 
-Graph-based data structures also present new computational challenges. In addition to sequence, graphs must represent topology. Given the size of many genomes of interest, this can be quite demanding on computer memory. Further, there is significant impetus to make the graph data structures computationally efficient, since they are frequently the core data structure in pangenomics applications.
+Graph-based data structures also present new computational challenges.
+In addition to sequence, graphs must represent topology.
+Given the size of many genomes of interest, this can be quite demanding on computer memory.
+Further, there is significant impetus to make the graph data structures computationally efficient, since they are frequently the core data structure in pangenomics applications.
 
-We have developed a stack of C++ libraries providing high-performance sequence graphs for graphical pangenomics applications. We also provide Python bindings so the components are accessible to Python developers as well. This resource will reduce the need for individual research groups to continually reimplement these core data structures. The C++ stack consists of two components. First, we have developed an abstract interface for sequence graphs, based on our experience in the VG project. Second, we have developed three concrete implementations of the sequence graph interface, which make different trade-offs between speed, memory, and complexity, and which attempt to provide good coverage of the design space. 
+Genome graphs that include small variants from a large population of eukaryotic genomes can contain hundreds of millions of nodes and edges.
+While the total information content in such models is only incrementally more than that require to represent the total sequence set of the pangenome, using naive data structures to identify and provide random access to elements of these graphs has very high memory costs.
+
+The variation graph toolkit (\textsc{vg}) \cite{Garrison_2018} provides a cautionary tale of such an implementation.
+It uses full width machine words as identifiers for elements, and stores the graph and its topology in a set of hash tables linking these identifiers to raw pointers.
+Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit can require $\approx$30 times as much memory as the serialized representation, consuming more than 300 GB of memory \cite{Garrison_2019}.
+
+Although \textsc{vg} provides a memory-efficient succinct representation of the graph (\textsc{xg}) that is used during read mapping and variant calling, it is static and does not allow for dynamic updates to the graph.
+In result, graph modifying steps in pangenomic analysis pipelines must be applied to large graphs by breaking the graph into smaller pieces.
+This is unfortunately not tenable for all graphs.
+For instance, many whole genome alignment and assembly graphs consist of a single giant component that cannot be partitioned easily.
+
+To overcome this limitation, we have developed three new graph genome data structures that are both succinct, in requiring working memory in the order of the information content of the graph, \emph{and} dynamic, in that they allow efficient updates and edits to the graph.
+Here, we compare the performance of these data structures to those in \textsc{vg} and \textsc{xg} on a diverse collection of genome graphs obtained during our work in graphical pangenomics.
+
+In addition to demonstrating the possibility of working with large, complex graphs in small amounts of memory, these implementations expose a common API based on the \textsc{HandleGraph} model.
+This model provides a consistent, reliable interface to genome graphs based on their fundamental units:
+
+\emph{Handles} identify one strand of a DNA sequence in the graph.
+
+\emph{Nodes} identify pairs of complementary DNA strands.
+
+\emph{Edges} link pairs of handles. %, and by consequence of each handle's orientation can represent links between the forward and reverse strand of the graph.
+
+\emph{Paths} represent sequences as walks through the graph, and are composed of \emph{steps} that describe a path's traversal of a particular handle.
+
+%To support reuse by other researchers,
+We package these implementations behind equivalent C++ and Python APIs in \texttt{libbdsg}.
+This software library will reduce the need for individual research groups to continually reimplement these core data structures.
+These dynamic \textsc{HandleGraph} libraries will ease the development of algorithms that work on large, complex pangenome graphs by making it easy to store them in reasonable amounts of working memory and manipulate them in reasonable amounts of time.
+
+%In response, we present a suite of
+
+%We have developed a stack of C++ libraries providing high-performance sequence graphs for graphical pangenomics applications.
+%We also provide Python bindings so the components are accessible to Python developers as well.
+
+%The C++ stack consists of two components.
+%First, we have developed an abstract interface for sequence graphs, based on our experience in the VG project.
+%Second, we have developed three concrete implementations of the sequence graph interface, which make different trade-offs between speed, memory, and complexity, and which attempt to provide good coverage of the design space. 
 
 \section{Implementation}
 
