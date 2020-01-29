@@ -1,0 +1,13 @@
+\#*
+.\#*
+*~
+*.aux
+*.toc
+*.bbl
+*.blg
+*.swp
+*.log
+main.pdf
+main.out
+versions
+analysis/
