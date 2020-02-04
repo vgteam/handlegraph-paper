@@ -2,12 +2,15 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage[symbol]{footmisc}
+\usepackage{todonotes}
 \bibliographystyle{plain}
 
 %\title{libbdsg and libhandlegraph: High-performance sequence graph implementations for graphical pangenomics}
 \title{Succinct dynamic genome variation graphs} % for graphical pangenomics}
   %libbdsg and libhandlegraph: High-performance sequence graph implementations for graphical pangenomics}
-\author{Jordan M. Eizenga \and Adam M. Novak \and Emily Kobayashi \and Cecilia Cisar \and Benedict Paten \and Erik Garrison}
+\author{Jordan M. Eizenga$^*$ \and Adam M. Novak$^*$ \and Emily Kobayashi \and Cecilia Cisar \and Benedict Paten \and Erik Garrison}
+
 
 \newcommand{\vocab}{\textbf}
 
@@ -27,13 +30,15 @@ Through experiments with a diverse collection of pangenome graphs, we demonstrat
 
 \section{Introduction}
 
+\footnotetext[1]{Contributed equally}
+
 With falling sequencing costs, the genomics community has sequenced increasingly many individuals within certain species.
 For example, hundreds of thousands of deeply sequenced human genomes are now available.
 The novel challenges of analyzing data sets of this scale have led to the development of \vocab{computational pangenomics}, which focuses on the analysis of populations of genomes rather than individuals \cite{computational2016computational}.
 
 Much of the research in computational pangenomics has coalesced around graph-based approaches for representing populations of genomes \cite{Paten_2017}.
 Unlike conventional string-based representations, graph data structures provide a coherent modeling language to represent different types of genomic variation like substitutions, insertions, deletions, and more complex genomic events.
-They support the compact representation of many-way relationships, such as whole genome alignments, between related genomes \cite{kehr2014genome}.
+They support the compact representation of many-way relationships between related genomes, such as whole genome alignments \cite{kehr2014genome}.
 
 Graph-based data structures also present new computational challenges.
 In addition to sequence, graphs must represent topology.
@@ -123,7 +128,7 @@ In general, the interface can be made memory safe for external users by eliminat
 
 The \texttt{libbdsg} library consists of four concrete implementations of the handle graph interface.
 Each implementation represents a different tradeoff in terms of speed, memory use, and capabilities.
-All of the implementations except XG are dynamic.
+All of the implementations except XG are dynamic. \todo{are we going to roll XG into libbdsg? that's what this text sounds like}
 
 \subsubsection{HashGraph}
 
@@ -146,9 +151,9 @@ In the typical case where adjacent entries in the vector are highly correlated, 
 \subsubsection{ODGI}
 
 \textsc{odgi} is based on a node-centric encoding of the graph that is designed to improve cache coherency when traversing or modifying the graph.
-This encoding is split between graph topology and paths, which was found to be important to yielding a good balance of runtime performance and memory usage on real-world graphs with large path sets.
-Each node's its sequence and inbound and outbound edges are encoded in a byte array using a variable-length integer encoding scheme.
-Edges are described in terms of a relative offset between the rank of this node in the sorted array of nodes of the graph and the node to which the edge arrives (or from which it emanates).
+This encoding is split between graph topology and paths, which is important for achieving good balance of runtime performance and memory usage on real-world graphs with large path sets.
+Each node's sequence and edges are encoded in a byte array using a variable-length integer encoding scheme.
+Edges are described in terms of a relative offset between the rank of this node in the sorted array of nodes of the graph and the node to which the edge arrives.
 The set of steps traversing each node is recorded in a second dynamic integer vector of fixed width entries, compressed so that only largest integer entry is stored at full width \cite{prezza2017framework}.
 Each step links a path identifier, relative ranks of the previous and successive node traversals on the path, and the rank of the next or previous step among the path steps recorded at that node.
 This path encoding scheme is similar to that used in the dynamic GBWT \cite{Siren_2019}, but differs in that the paths are not prefix-sorted but are added in an arbitrary order.
@@ -241,7 +246,7 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
   \end{subfigure}
   \caption{
     \label{fig:prof}
-    \textbf{Performance of models on the graph collection.}
+    \textbf{Performance of models on the graph collection. \todo{I think this figure needs more explanation in the caption}}
     }
 \end{figure}
 
