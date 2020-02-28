@@ -219,41 +219,54 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
 	\caption{{\label{fig:hgsvc} \textbf{Performance on a graph of structural variants from the HGSVC.} All four new graph implementations compare favorably to VG. PackedGraph tends to be the most memory efficient, HashGraph tends to be the fastest, and ODGI is balanced in between. XG provides good performance on both memory usage and speed, but it is static.}}
 \end{figure}
 
+\begin{figure} %[t]{1.0\textwidth}
+  \centering
+  \includegraphics[width=1.0\textwidth]{figures/graph_summary.pdf}
+  \caption{
+    \label{fig:graphprops}
+    \textbf{Graphs in the collection.}
+    }
+\end{figure}
+  
 \begin{figure}
-  \begin{subfigure}[t]{0.5\textwidth}
+  \centering
+  \begin{subfigure}[t]{1.0\textwidth}
     \centering
     \includegraphics[width=1.0\textwidth]{figures/build_mem.pdf}
     \caption{build memory}
   \end{subfigure}
-  \begin{subfigure}[t]{0.5\textwidth}
+  \begin{subfigure}[t]{1.0\textwidth}
     \centering
     \includegraphics[width=1.0\textwidth]{figures/load_mem.pdf}
     \caption{load memory}
   \end{subfigure}
-  \begin{subfigure}[t]{0.5\textwidth}
+  \caption{
+    \label{fig:prof1}
+    \textbf{Performance of models on the graph collection.} 
+    %\todo[inline]{I think this figure needs more explanation in the caption. Also, can we put more descriptive axes on the figures and modify it to have only one legend? And what is subplot f showing? It doesn't seem to have any performance statistics in it. We should probably also unify the color scheme with Figure \ref{fig:hgsvc}}
+    }
+\end{figure}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.9\textwidth}
     \centering
     \includegraphics[width=1.0\textwidth]{figures/handle_enumeration_time.pdf}
     \caption{handles/second}
   \end{subfigure}
-  \begin{subfigure}[t]{0.5\textwidth}
+  \begin{subfigure}[t]{0.9\textwidth}
     \centering
     \includegraphics[width=1.0\textwidth]{figures/edge_enumeration_time.pdf}
     \caption{edges/second}
   \end{subfigure}
-  \begin{subfigure}[t]{0.5\textwidth}
+  \begin{subfigure}[t]{0.9\textwidth}
     \centering
     \includegraphics[width=1.0\textwidth]{figures/step_enumeration_time.pdf}
     \caption{path steps/second}
   \end{subfigure}
-  \begin{subfigure}[t]{0.5\textwidth}
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/graph_summary.pdf}
-    \caption{graph properties}
-  \end{subfigure}
   \caption{
-    \label{fig:prof}
+    \label{fig:prof2}
     \textbf{Performance of models on the graph collection.} 
-    \todo[inline]{I think this figure needs more explanation in the caption. Also, can we put more descriptive axes on the figures and modify it to have only one legend? And what is subplot f showing? It doesn't seem to have any performance statistics in it. We should probably also unify the color scheme with Figure \ref{fig:hgsvc}}
     }
 \end{figure}
 
