@@ -225,21 +225,15 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
   \caption{
     \label{fig:graphprops}
     \textbf{Graphs in the collection.}
+    An overview of the 2299 graphs in the collection used for experiments.
+    Most graphs contain edges, with the exception of one large graph built from a set of linear sequences (top left), which has no edges.
+    In general, graphs in the collection have a path set, but the path coverage may be very low.
     }
 \end{figure}
   
 \begin{figure}
   \centering
-  \begin{subfigure}[t]{1.0\textwidth}
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/build_mem.pdf}
-    \caption{build memory}
-  \end{subfigure}
-  \begin{subfigure}[t]{1.0\textwidth}
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/load_mem.pdf}
-    \caption{load memory}
-  \end{subfigure}
+  \includegraphics[width=1.0\textwidth]{figures/build_and_load_memory.png}
   \caption{
     \label{fig:prof1}
     \textbf{Performance of models on the graph collection.} 
@@ -249,21 +243,7 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
 
 \begin{figure}
   \centering
-  \begin{subfigure}[t]{0.9\textwidth}
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/handle_enumeration_time.pdf}
-    \caption{handles/second}
-  \end{subfigure}
-  \begin{subfigure}[t]{0.9\textwidth}
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/edge_enumeration_time.pdf}
-    \caption{edges/second}
-  \end{subfigure}
-  \begin{subfigure}[t]{0.9\textwidth}
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/step_enumeration_time.pdf}
-    \caption{path steps/second}
-  \end{subfigure}
+  \includegraphics[width=1.0\textwidth]{figures/iteration_per_second.png}
   \caption{
     \label{fig:prof2}
     \textbf{Performance of models on the graph collection.} 
