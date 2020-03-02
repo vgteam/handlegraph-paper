@@ -34,14 +34,14 @@ Through experiments with a diverse collection of pangenome graphs, we demonstrat
 
 With falling sequencing costs, the genomics community has sequenced increasingly many individuals within certain species.
 For example, hundreds of thousands of deeply sequenced human genomes are now available.
-The novel challenges of analyzing data sets of this scale have led to the development of \vocab{computational pangenomics}, which focuses on the analysis of populations of genomes rather than individuals \cite{computational2016computational}.
+The novel challenges of analyzing data sets of this scale have led to the development of \vocab{computational pangenomics}, which focuses on analyzing populations of genomes rather than individuals \cite{computational2016computational}.
 
 Much of the research in computational pangenomics has coalesced around graph-based approaches for representing populations of genomes \cite{Paten_2017}.
 Unlike conventional string-based representations, graph data structures provide a coherent modeling language to represent different types of genomic variation like substitutions, insertions, deletions, and more complex genomic events.
 They also compactly represent many-way relationships between related genomes, such as whole genome alignments \cite{kehr2014genome}.
 
 Graph-based data structures also present new computational challenges.
-In addition to sequence, graphs must represent topology.
+In addition to sequence, genome graphs must represent topology.
 Given the size of many genomes of interest, this can be quite demanding on computer memory.
 Further, there is significant impetus to make the graph data structures computationally efficient, since they are frequently the core data structure in pangenomics applications.
 
@@ -56,7 +56,7 @@ Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit requ
 
 Although \textsc{vg} provides a memory-efficient succinct representation of the graph (\textsc{xg}) that is used during read mapping and variant calling, it is static and does not allow for dynamic updates to the graph.
 As a result, graph modifying steps in pangenomic analysis pipelines must break large graphs into smaller pieces, often connected components that correspond to chromosomes.
-This is unfortunately not tenable for all graphs.
+Unfortunately, this strategy is not tenable for all graphs.
 For instance, many whole genome alignment and assembly graphs consist of a single giant component that cannot be partitioned easily.
 
 To overcome this limitation, we have developed three new graph genome data structures that are both succinct, in requiring working memory in the order of the information content of the graph, \emph{and} dynamic, in that they allow efficient updates and edits to the graph.
@@ -89,7 +89,7 @@ In bidirected sequence graphs, a node's sides correspond to the 5' and 3' ends o
 
 Paths through a bidirected graph must leave a node out of the opposite side that they enter it.
 We interpret paths that traverse a node from the 3' side to the 5' as using the node's reverse complement strand, which provides a natural means to encode DNA strandedness.
-Specific paths correspond to sequences of interest, such as reference genomes or annotations (subsequences) of them.
+Specific paths correspond to sequences of interest, such as reference genomes or annotations of the reference.
 Because paths like these are so frequently important in practice, our formalism also includes paths as a first class object, embedded in the graph.
 
 \subsection{The handle graph interface}
@@ -113,7 +113,7 @@ The \textsc{HandleGraph} model focuses on five fundamental entities in the bidir
 The \texttt{libhandlegraph} interface requires sequence graph implementations to be able to provide or consume these handles for basic queries.
 %The handles are then passed back to the API to refer to these entities when performing operations and making queries.
 For instance, we might obtain a handle from an implementation by querying a node's ID and providing an orientation, while another function provided in the implementation would map the handle back to a given node ID.
-Alternatively, we can obtain reference to a path by its name (e.g. ``chr22''), and then iterate over the series of step handles in the path to follow its course through the graph.
+Alternatively, we can obtain reference to a path by its name (e.g. ``chr22''), and then iterate over the series of steps in the path to follow its course through the graph.
 Or, starting from a given handle, we can follow its outgoing edges along the same strand and direction to explore the topology of the graph.
 
 %The actual contents of a handle are unspecified, which gives significant flexibility to the implementation.
@@ -134,7 +134,7 @@ Further, the interface can be made memory-safe by eliminating raw pointers and o
 The \texttt{libbdsg} library consists of four concrete implementations of the handle graph interface.
 Each implementation represents a different tradeoff in terms of speed, memory use, and capabilities.
 All of the implementations except XG are dynamic. 
-\todo[inline]{Are we going to roll XG into libbdsg? That's what this text sounds like. However, the introduction sets it up as if XG is one of the existing states-of-the-art we're comparing against, in which case it might not make sense to describe the implementation in the subsection below.}
+%\todo[inline]{Are we going to roll XG into libbdsg? That's what this text sounds like. However, the introduction sets it up as if XG is one of the existing states-of-the-art we're comparing against, in which case it might not make sense to describe the implementation in the subsection below.}
 
 \subsubsection{HashGraph}
 
@@ -175,9 +175,9 @@ Unlike the others, this implementation is static.
 This permits a more powerful set of efficient queries from the graph, especially from paths.
 The encoding is designed to balance speed and low-memory usage.
 The topology of the graph is encoded in a single vector of bit-compressed integers, which promotes cache-efficiency.
-Rank and select operations on compressed bit-vectors are used to provide random access over the variable-width records.
+Rank and select operations on succinct bit-vectors are used to provide random access over the variable-width records, which each encode a node's sequence, ID, and edges.
 Embedded paths are encoded in variable-length integer vectors with Elias gamma encoding.
-Rank and select operations from bit vectors also provide queries by base-pair position along paths.
+Rank and select operations from succinct bit vectors also provide queries by base-pair position along paths.
 
 \section{Evaluation}
 
