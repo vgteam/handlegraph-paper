@@ -239,7 +239,13 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
   \caption{
     \label{fig:prof1}
     \textbf{Memory requirements for model construction and loading.}
-    The memory requirements 
+    Memory costs versus graph sequence size for the graph collection, colored by HandleGraph model.
+    The memory requirements for graph construction tend to be higher than those for loading the graph model.
+    All methods show fixed overheads of several megabytes, seen in the flat tail to the left of both plots.
+    Outside of this region, all methods show roughly linear scaling in both build and load costs per input base pair.
+    The relative differences in memory costs appear to be stable between different methods across many orders of magnitude in graph size.
+    Notably, \textsc{vg} has approximately the same build and load costs, as the data structures used are the same.
+    The other methods tend to use auxilary data structures at build time, and so require more memory to build the data structure than to load it.
     }
 \end{figure}
 
