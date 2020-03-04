@@ -133,7 +133,7 @@ Further, the interface can be made memory-safe by eliminating raw pointers and o
 
 The \texttt{libbdsg} library consists of four concrete implementations of the handle graph interface.
 Each implementation represents a different tradeoff in terms of speed, memory use, and capabilities.
-All of the implementations except XG are dynamic. 
+All of the implementations except \textsc{xg} are dynamic. 
 %\todo[inline]{Are we going to roll XG into libbdsg? That's what this text sounds like. However, the introduction sets it up as if XG is one of the existing states-of-the-art we're comparing against, in which case it might not make sense to describe the implementation in the subsection below.}
 
 \subsubsection{HashGraph}
@@ -214,9 +214,13 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=.75\textwidth]{figures/HGSVC_sorted_gfa.png}
+		\includegraphics[width=1.0\textwidth]{figures/HGSVC_sorted_gfa.png}
 	\end{center}
-	\caption{{\label{fig:hgsvc} \textbf{Performance on a graph of structural variants from the HGSVC.} All four new graph implementations compare favorably to VG. PackedGraph tends to be the most memory efficient, HashGraph tends to be the fastest, and ODGI is balanced in between. XG provides good performance on both memory usage and speed, but it is static.}}
+	\caption{{\label{fig:hgsvc}
+        \textbf{Performance on a graph of structural variants from the HGSVC.}
+        All four new graph implementations compare favorably to \textsc{vg}.
+        \textsc{PackedGraph} tends to be the most memory efficient, \textsc{HashGraph} tends to be the fastest, and \textsc{odgi} is balanced in between.
+        \textsc{xg} provides good performance on both memory usage and speed, but it is static.}}
 \end{figure}
 
 \begin{figure} %[t]{1.0\textwidth}
