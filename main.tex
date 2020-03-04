@@ -133,18 +133,24 @@ Further, the interface can be made memory-safe by eliminating raw pointers and o
 
 \subsection{Graph implementations}
 
-The \texttt{libbdsg} library consists of four concrete implementations of the handle graph interface.
+We consider five implementations of the \textsc{HandleGraph} model.
+To ground our experimental results, here we we provide a high-level overview of each implementation.
+Two implementations, \textsc{vg} and \textsc{xg}, have been described previously \cite{Garrison_2018,Garrison_2019}.
+The others are combined in the \texttt{libbdsg} library (\url{https://github.com/vgteam/libbdsg}), which provides concrete implementations of \textsc{HashGraph}, \textsc{odgi}, and \textsc{PackedGraph}.
 Each implementation represents a different tradeoff in terms of speed, memory use, and capabilities.
-All of the implementations except \textsc{xg} are dynamic. 
-%\todo[inline]{Are we going to roll XG into libbdsg? That's what this text sounds like. However, the introduction sets it up as if XG is one of the existing states-of-the-art we're comparing against, in which case it might not make sense to describe the implementation in the subsection below.}
+All of the implementations except \textsc{xg} are dynamic.
+Readers seeking a precise description of each implementation should refer to code referenced in this section.
 
 \subsubsection{HashGraph}
 
-This implementation has speed as its primary goal.
-The core adjacency list is implemented using a high performance hash table.
-Most of the smaller component data structures are uncompressed STL objects, so they can easily be computed on in the native in-memory format.
-Embedded paths are implemented as doubly-linked lists.
-This implementation is most appropriate for small graphs (from small genomes or small regions of larger genomes) or for high-memory compute environments.
+\textsc{HashGraph} has speed as its primary goal.
+It represents the graph as a collection of node objects in a high performance hash table, while embedded paths are implemented as doubly-linked lists.
+Edges are recorded in vectors attached to each node that they connect, which supports efficient bidirectional traversal of the graph topology.
+This encoding of the adjacency matrix is appropriate for genome graphs, which are typically very sparse.
+Each node object maintains a vector of pointers to the path steps that traverse it.
+Most of \textsc{HashGraph}'s component data structures are uncompressed STL objects which can easily be computed on in their native in-memory arrangement.
+\textsc{HashGraph} trades memory for time, and thus is most appropriate for small graphs (from small genomes or small regions of larger genomes) or for high-memory compute environments.
+Its implementation can be found at \url{https://github.com/vgteam/libbdsg/blob/master/src/hash_graph.cpp}.
 
 \subsubsection{ODGI}
 
@@ -159,12 +165,12 @@ This path encoding scheme is similar to that used in the dynamic GBWT \cite{Sire
 Provided each path step tends to move only a short distance in the sorted nodes of the graph (e.g. from $n_{5} \to n_{7}$), then the maximum bit-width of the path vector will be low, resulting in good compression.
 
 We have implemented a Python binding to \textsc{odgi}. 
-The documentation of this interface can be used to understand the full scope of the handlegraph API\url{https://pangenome.github.io/odgi/odgipy.html}.
-
+In addition to allowing interaction with \textsc{odgi}'s data structures from python, the documentation of this interface can be used to understand the full scope of the handlegraph API\url{https://pangenome.github.io/odgi/odgipy.html}.
+The full implementation of \textsc{odgi} may be found at \url{https://github.com/vgteam/libbdsg/blob/master/src/odgi.cpp}.
 
 \subsubsection{PackedGraph}
 
-This implementation focuses on having a low memory footprint.
+\textsc{PackedGraph} is designed to have a very low memory footprint.
 Most of its component data structures are---conceptually speaking---linked lists.
 However, they are implemented using vectors of bit-compressed integers, where pointers are produced by treating some of the integer entries as indexes into the vector that contains them.
 The bit-width can be chosen dynamically without affecting the amortized asymptotic run time of graph operations in the typical case that the $i$-th entry in the vector is $O(i)$.
