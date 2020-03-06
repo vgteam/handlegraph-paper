@@ -24,8 +24,7 @@ sink("path.traversal.time_subset_with_paths.lm.txt"); with(subset(bdsg.prof, gra
 
 #ggplot(bdsg.prof, aes(x=graph.seq.length, y=graph.node.count/handle.enumeration.time, color=graph.model)) + geom_point() + scale_x_log10()
 #ggsave("bdsg.prof_steps.per.second_vs_seq.length.pdf", width=9.3, height=4.71)
-ggplot(subset(bdsg.prof,graph.model=="vg"), aes(y=graph.avg.degree, x=graph.seq.length, color=graph.avg.path.depth, shape=graph.avg.path.depth==0)) + geom_point(alpha=I(1/3)) + scale_x_log10("graph sequence length (bp)", breaks = c(1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9)) + scale_y_continuous("average node degree") + theme_bw() + theme_bw() + scale_shape_discrete("h
-as paths") + scale_color_gradientn("path depth", colors=c("blue", "red", "yellow"), breaks=c(0,10,20,30,40,50,60))
+ggplot(subset(bdsg.prof,graph.model=="vg"), aes(y=graph.avg.degree, x=graph.seq.length, color=graph.avg.path.depth, shape=graph.avg.path.depth==0)) + geom_point(alpha=I(1/3)) + scale_x_log10("graph sequence length (bp)", breaks = c(1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9)) + scale_y_continuous("average node degree") + theme_bw() + theme_bw() + scale_shape_discrete("has paths") + scale_color_gradientn("path depth", colors=c("blue", "red", "yellow"), breaks=c(0,10,20,30,40,50,60))
 ggsave("graph_summary.png", height=4.41, width=5.99)
 ggsave("graph_summary.pdf", height=4.41, width=5.99)
 ggsave("bdsg.prof_avg.degree_vs_log10.seq.length_color_avg.path.depth.pdf", width=9.3, height=4.71)
@@ -40,7 +39,7 @@ bdsg.prof.df.iter$name <- as.factor(bdsg.prof.df.iter$name)
 levels(bdsg.prof.df.iter$name) <- c("edges per second", "handles per second", "steps per second")
 bdsg.prof.df.iter <- subset(bdsg.prof.df.iter, value>0) # remove a handful of failures
 
-ggplot(subset(bdsg.prof.df.iter, value>0), aes(x=graph.seq.length, y=value, color=graph.model)) + geom_point(size=0.5, alpha=I(1/2)) + scale_x_log10("graph sequence length (bp)", breaks = c(1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9)) + scale_y_log10("", breaks = c(1e4,1e5,1e6,1e7,1e8,1e9)) + scale_color_discrete("model") + facet_grid(name ~ ., scales = "free_y") + theme_bw()
+ggplot(subset(bdsg.prof.df.iter, value>0), aes(x=graph.seq.length, y=value, color=graph.model)) + geom_point(size=0.5, alpha=I(1/2)) + scale_x_log10("graph sequence length (bp)", breaks = c(1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9)) + scale_y_log10("", breaks = c(1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11)) + scale_color_discrete("model") + facet_grid(name ~ ., scales = "free_y") + theme_bw()
 ggsave("iteration_per_second.pdf", height=8, width=6.7)
 ggsave("iteration_per_second.png", height=8, width=6.7)
 
@@ -49,7 +48,7 @@ bdsg.prof.df.mem$name <- as.factor(bdsg.prof.df.mem$name)
 levels(bdsg.prof.df.mem$name) <- c("build memory (bytes)", "load memory (bytes)")
 bdsg.prof.df.mem <- subset(bdsg.prof.df.mem, value>0) # remove a handful of failures
 
-ggplot(subset(bdsg.prof.df.mem, value>0), aes(x=graph.seq.length, y=value, color=graph.model)) + geom_point(size=0.5, alpha=I(1/2)) + scale_x_log10("graph sequence length (bp)", breaks = c(1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9)) + scale_y_log10("", breaks = c(1e4,1e5,1e6,1e7,1e8,1e9)) + scale_color_discrete("model") + facet_grid(name ~ ., scales = "free_y") + theme_bw()
+ggplot(subset(bdsg.prof.df.mem, value>0), aes(x=graph.seq.length, y=value*1000, color=graph.model)) + geom_point(size=0.5, alpha=I(1/2)) + scale_x_log10("graph sequence length (bp)", breaks = c(1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9)) + scale_y_log10("", breaks = c(1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11)) + scale_color_discrete("model") + facet_grid(name ~ ., scales = "free_y") + theme_bw()
 ggsave("build_and_load_memory.pdf", height=7, width=6.7)
 ggsave("build_and_load_memory.png", height=7, width=6.7)
 
@@ -66,7 +65,7 @@ ggplot(bdsg.prof, aes(x=graph.seq.length, y=steps.per.sec, color=graph.model)) +
 ggsave("bdsg.prof_steps.per.second_vs_seq.length_logXY.pdf", width=9.3, height=4.71)
 ggsave("bdsg.prof_steps.per.second_vs_seq.length_logXY.png", width=9.3, height=4.71) 
 
-ggplot(bdsg.prof, aes(x=graph.seq.length, y=build.mem, color=graph.model)) + geom_point() + scale_x_log10() + scale_y_log10() + theme_bw()
+ggplot(bdsg.prof, aes(x=graph.seq.length, y=build.mem*1000, color=graph.model)) + geom_point() + scale_x_log10() + scale_y_log10() + theme_bw()
 ggsave("bdsg.prof_build.mem_vs_seq.length_logXY.pdf", width=9.3, height=4.71)
 ggsave("bdsg.prof_build.mem_vs_seq.length_logXY.png", width=9.3, height=4.71)
 
@@ -74,7 +73,7 @@ ggplot(bdsg.prof, aes(x=graph.seq.length, y=build.time, color=graph.model)) + ge
 ggsave("bdsg.prof_build.time_vs_seq.length_logXY.pdf", width=9.3, height=4.71)
 ggsave("bdsg.prof_build.time_vs_seq.length_logXY.png", width=9.3, height=4.71)
 
-ggplot(bdsg.prof, aes(x=graph.seq.length, y=load.mem, color=graph.model)) + geom_point() + scale_x_log10() + scale_y_log10() + theme_bw()
+ggplot(bdsg.prof, aes(x=graph.seq.length, y=load.mem*1000, color=graph.model)) + geom_point() + scale_x_log10() + scale_y_log10() + theme_bw()
 ggsave("bdsg.prof_load.mem_vs_seq.length_logXY.pdf", width=9.3, height=4.71)
 ggsave("bdsg.prof_load.mem_vs_seq.length_logXY.png", width=9.3, height=4.71)
 
