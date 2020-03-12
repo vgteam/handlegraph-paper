@@ -1,6 +1,7 @@
 #!/usr/bin/Rscript
 
 require(tidyverse)
+require(ggrepel)
 
 #bdsg.prof <- read.delim('expanded_profiling.cleaned.tsv.gz')
 bdsg.prof <- read.delim('fixed_handle_profiling.cleaned.tsv.gz')
@@ -52,6 +53,12 @@ ggplot(subset(bdsg.prof.df.mem, value>0), aes(x=graph.seq.length, y=value*1000, 
 ggsave("build_and_load_memory.pdf", height=7, width=6.7)
 ggsave("build_and_load_memory.png", height=7, width=6.7)
 
+
+subset(bdsg.prof, startsWith(as.character(graph.name), "human__pan.AF0") & !grepl("MT", as.character(graph.name)) & !grepl("nopaths", as.character(graph.name)) & !grepl("mutilated", as.character(graph.name)) & !grepl("noP", as.character(graph.name))) %>% mutate(graph.subname=unlist(lapply(as.character(graph.name), function(x) strsplit(strsplit(x, "__")[[1]][3], ".gfa")[[1]]))) %>% ggplot(aes(y=load.mem*1000, x=graph.seq.length, color=graph.model)) + geom_point() + scale_y_log10("load memory (bytes)") + scale_x_log10("graph sequence length (bp)") + scale_color_discrete("model") + geom_text_repel(aes(label=graph.subname)) + theme_bw()
+ggsave("1000gp_chroms.pdf", height=4.2, width=7)
+ggsave("1000gp_chroms.png", height=4.2, width=7)
+
+subset(bdsg.prof, startsWith(as.character(graph.name), "human__pan.AF0") & !grepl("MT", as.character(graph.name)) & !grepl("nopaths", as.character(graph.name)) & !grepl("mutilated", as.character(graph.name))) %>% group_by(graph.model) %>% summarize(load.bytes.per.bp=mean(load.mem*1000/graph.seq.length), build.bytes.per.bp=mean(build.mem*1000/graph.seq.length), handles.per.sec=mean(graph.node.count/handle.enumeration.time), edges.per.sec=mean(graph.edge.count/edge.traversal.time), steps.per.sec=mean(graph.step.count/path.traversal.time)) %>% as.data.frame
 
 ggplot(bdsg.prof, aes(x=graph.seq.length, y=handles.per.sec, color=graph.model)) + geom_point() + scale_x_log10() + scale_y_log10() + theme_bw()
 ggsave("bdsg.prof_handles.per.second_vs_seq.length_logXY.pdf", width=9.3, height=4.71)
