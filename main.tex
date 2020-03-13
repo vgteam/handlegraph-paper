@@ -232,9 +232,12 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
 	\end{center}
 	\caption{{\label{fig:hgsvc}
         \textbf{Performance on a graph of structural variants from the HGSVC.}
+        Abbreviations used here and in subsequent figures and tables: vg = \textsc{vg}, hg = \textsc{HashGraph}, og = \textsc{odgi}, pg = \textsc{PackedGraph}, xg = \textsc{xg}.
         All four new graph implementations compare favorably to \textsc{vg}.
         \textsc{PackedGraph} tends to be the most memory efficient, \textsc{HashGraph} tends to be the fastest, and \textsc{odgi} is balanced in between.
-        \textsc{xg} provides good performance on both memory usage and speed, but it is static.}}
+        \textsc{xg} provides good performance on both memory usage and speed, but it is static.
+        }
+      }
 \end{figure}
 
 \begin{figure} %[t]{1.0\textwidth}
@@ -272,7 +275,13 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
   \includegraphics[width=1.0\textwidth]{figures/iteration_per_second.png}
   \caption{
     \label{fig:prof2}
-    \textbf{Graph element enumeration performance.} 
+    \textbf{Graph element enumeration performance.}
+    Iteration performance for edges, handles, and path steps for the full graph collection, shown in terms of elements per second.
+    \textsc{HashGraph} provides the highest performance for all element iteration types on smaller graphs, but this performance falls of with larger graphs, presumably due to scaling properties of the backing hash tables.
+    The same pattern can be seen for \textsc{vg}, although the overall performance is worse.
+    Although it has the worst edge iteration performance, \textsc{PackedGraph} provides good performance on handle and path step iteration.
+    The relativistic path encoding in \textsc{odgi} yields poor performance on path iteration, and node decoding overheads appear to reduce its handle iteration performance, but it has good graph topology traversal performance, perhaps due to cache coherency of the edge encoding.
+    \textsc{xg} provides excellent iteration performance in all cases.
     }
 \end{figure}
 
