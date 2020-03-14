@@ -58,6 +58,10 @@ subset(bdsg.prof, startsWith(as.character(graph.name), "human__pan.AF0") & !grep
 ggsave("1000gp_chroms.pdf", height=4.2, width=7)
 ggsave("1000gp_chroms.png", height=4.2, width=7)
 
+subset(bdsg.prof, startsWith(as.character(graph.name), "human__pan.AF0") & !grepl("MT", as.character(graph.name)) & !grepl("nopaths", as.character(graph.name)) & !grepl("mutilated", as.character(graph.name)) & !grepl("noP", as.character(graph.name))) %>% mutate(graph.subname=unlist(lapply(as.character(graph.name), function(x) strsplit(strsplit(x, "__")[[1]][3], ".gfa")[[1]]))) %>% ggplot(aes(y=load.mem*1000, x=graph.node.count, color=graph.model)) + scale_y_continuous("load memory (bytes)") + scale_x_continuous("graph node count") + scale_color_discrete("model") + geom_text(aes(label=graph.subname)) + theme_bw()
+ggsave("1000gp_chroms_node_count.pdf", height=4.2, width=7)
+ggsave("1000gp_chroms_node_count.png", height=4.2, width=7)
+
 subset(bdsg.prof, startsWith(as.character(graph.name), "human__pan.AF0") & !grepl("MT", as.character(graph.name)) & !grepl("nopaths", as.character(graph.name)) & !grepl("mutilated", as.character(graph.name))) %>% group_by(graph.model) %>% summarize(load.bytes.per.bp=mean(load.mem*1000/graph.seq.length), build.bytes.per.bp=mean(build.mem*1000/graph.seq.length), handles.per.sec=mean(graph.node.count/handle.enumeration.time), edges.per.sec=mean(graph.edge.count/edge.traversal.time), steps.per.sec=mean(graph.step.count/path.traversal.time)) %>% as.data.frame
 
 ggplot(bdsg.prof, aes(x=graph.seq.length, y=handles.per.sec, color=graph.model)) + geom_point() + scale_x_log10() + scale_y_log10() + theme_bw()

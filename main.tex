@@ -287,10 +287,14 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=1.0\textwidth]{figures/1000gp_chroms.pdf}
+  \includegraphics[width=1.0\textwidth]{figures/1000gp_chroms_node_count.pdf}
   \caption{
     \label{fig:1000GPchroms}
-    \textbf{Load memory for chromosome graphs built from 1000 Genomes Project variants and GRCh37.} 
+    \textbf{Load memory versus node count for chromosome graphs built from 1000 Genomes Project variants and GRCh37.}
+    For each method, memory requirements are more strongly correlated with the number of nodes in the graph ($R^2 \approx$ 0.998) than with the graph sequence length ($R^2 \approx$ 0.986).
+    Although the memory requirements are dominated by graph sequence size, node count will increase with variant density.
+    Methods generally incur an overhead for each node that is larger than the sequence length.
+    Linear scales clarify that the absolute difference in performance between \textsc{vg} and the other methods is significant.
     }
 \end{figure}
 
