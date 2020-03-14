@@ -145,6 +145,29 @@ Each implementation represents a different tradeoff in terms of speed, memory us
 All of the implementations except \textsc{xg} are dynamic.
 Readers seeking a precise description of each implementation should refer to code referenced in this section.
 
+\subsubsection{\textsc{vg}}
+
+We have extended the data model in \textsc{vg}, previously described in \cite{Garrison_2018}, to match the \textsc{HandleGraph} API.
+The backing data structures used by the model remain the same.
+The graph entities are stored as objects in a backing vector, and referred to internally by hash tables that map between node identifiers and pointers into this vector.
+Edges are indexed in a hash table mapping pairs of handles to edge objects.
+Paths are stored in a set of linked lists, with a hash table mapping between nodes and path steps.
+This arrangement was tenable for the early development of algorithms working on variation graphs.
+Its inefficiency, caused by unnecessary overheads and data duplication, has generated significant difficulty for groups working with \textsc{vg}.
+The other \textsc{HandleGraph} implementations respond to the limitations of this approach.
+
+\subsubsection{\textsc{xg}}
+
+\textsc{xg} was initially developed in response to the memory and runtime costs of \textsc{vg}, which prevent its application to large graphs.
+It additionally provides positional indexes over paths that are required for read mapping and variant calling, and is the graph data model used in most established bioinformatic operations on variation graphs \cite{Garrison_2018,hickey2020genotyping}.
+Unlike other \textsc{HandleGraph} implementations, \textsc{xg} is a static graph index.
+This permits a more powerful set of efficient queries against the graph, especially for paths.
+The encoding is designed to balance speed and low memory usage.
+The topology of the graph is encoded in a single vector of bit-compressed integers, which promotes cache-efficiency.
+Rank and select operations on succinct bit vectors are used to provide random access over the variable-length records, which each encode a node's sequence, ID, and edges.
+Embedded paths are encoded in variable-length integer vectors with Elias gamma encoding.
+Rank and select operations on succinct bit vectors also provide queries by base-pair position along paths.
+
 \subsubsection{\textsc{HashGraph}}
 
 \textsc{HashGraph} has speed as its primary goal.
@@ -184,16 +207,6 @@ In the typical case where adjacent entries in the vector are highly correlated, 
 
 %Longer-range jumps do occur, but they tend to be more rare.
 %Modifying path step records can be expensive, but when the number of traversing paths is relatively small, it remains in higher caches and can be accomplished efficiently.
-
-\subsubsection{\textsc{xg}}
-
-Unlike the others, this implementation is static.
-This permits a more powerful set of efficient queries against the graph, especially for paths.
-The encoding is designed to balance speed and low memory usage.
-The topology of the graph is encoded in a single vector of bit-compressed integers, which promotes cache-efficiency.
-Rank and select operations on succinct bit vectors are used to provide random access over the variable-length records, which each encode a node's sequence, ID, and edges.
-Embedded paths are encoded in variable-length integer vectors with Elias gamma encoding.
-Rank and select operations on succinct bit vectors also provide queries by base-pair position along paths.
 
 \section{Evaluation}
 
