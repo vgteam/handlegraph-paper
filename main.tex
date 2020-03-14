@@ -248,9 +248,21 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
 		\includegraphics[width=1.0\textwidth]{figures/GRaphchrXpaper.pdf}
 	\end{center}
 	\caption{{\label{fig:graph}
-        \textbf{Entities in the bidirected sequence graph.}  
-	}
+        \textbf{Entities in the bidirected sequence graph.}
+        Top, a variation graph showing \emph{nodes} (yellow rectangles), each of which contain a forward and reverse \emph{handle} (red solid and dashed rectangles, respectively).
+        Handles show the node identifier, the direction (+ or -), and the sequence of the handle.
+        Note that reverse handles show the reverse complement sequence of the forward handle.
+        All \emph{edges} are shown as connections between nodes, with forward-to-forward edges denoted by solid lines, while reverse-to-reverse edges denoted by dotted lines.
+        Two edges that invert from forward to reverse and reverse to forward are shown with spaced, dotted line.
+        Edges run from the handle at their beginning to their end, as indicated by the arrowhead.
+        Below, we illustrate four \emph{paths}.
+        (Each has an implicit handle, and a name, which are omitted for brevity.)
+        Each path is shown in its natural direction as a series of connected \emph{steps} that refer to handles in the graph.
+        The first two paths differ by a SNP, with one passing through \texttt{2+:T}, and the other through \texttt{3+:G}.
+        The third path is the reverse complement of the first.
+        The fourth is the same as the first, but contains an inversion, passing through \texttt{5-:AATC} rather than \texttt{5+:GATT}.
       }
+    }
 \end{figure}
 
 
