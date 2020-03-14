@@ -12,7 +12,7 @@
 %\title{libbdsg and libhandlegraph: High-performance sequence graph implementations for graphical pangenomics}
 \title{Succinct dynamic genome variation graphs} % for graphical pangenomics}
   %libbdsg and libhandlegraph: High-performance sequence graph implementations for graphical pangenomics}
-\author{Jordan M. Eizenga$^*$ \and Adam M. Novak$^*$ \and Emily Kobayashi \and Flavia Villani \and Cecilia Cisar \and Benedict Paten \and Erik Garrison}
+\author{Jordan M. Eizenga$^*$ \and Adam M. Novak$^*$ \and Emily Kobayashi \and Flavia Villani  \and Cecilia Cisar \and Vincenza Colonna \and Benedict Paten \and Erik Garrison}
 
 
 \newcommand{\vocab}{\textbf}
@@ -100,7 +100,7 @@ Because paths like these are so frequently important in practice, our formalism 
 The \texttt{libhandlegraph} library describes a generic interface that exposes basic operations on our sequence graph data model.
 The interface uses ``handles' (opaque references modeled after the concept of a file handle) in order to remain agnostic about the backing implementation of the graph.
 
-The \textsc{HandleGraph} model focuses on five fundamental entities in the bidirected sequence graph:
+The \textsc{HandleGraph} model focuses on five fundamental entities in the bidirected sequence graph (Figure \ref{fig:graph}):
 
 -- \emph{Handles} identify one strand of a DNA sequence in the graph.
 
@@ -225,6 +225,17 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
 % TODO: we should write a guide on GitHub for how to use
 
 \bibliography{references.bib}
+
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=1.0\textwidth]{figures/GRaphchrXpaper.pdf}
+	\end{center}
+	\caption{{\label{fig:graph}
+        \textbf{Entities in the bidirected sequence graph.}  
+	}
+      }
+\end{figure}
+
 
 \begin{figure}
 	\begin{center}
