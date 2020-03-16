@@ -233,7 +233,39 @@ However, we observe that the hash-based models (\textsc{vg} and \textsc{HashGrap
 Smaller, less dramatic decreases in performance can be seen for the other implementations.
 For path enumeration, the highest-performing methods are \textsc{xg} and \textsc{HashGraph} at approximately 10 times faster than \textsc{odgi}, whose relativistic path storage is costly to traverse.
 
-% \section{Discussion}
+\subsection{1000 Genome Project chromosome graphs}
+
+Variation graphs built from the 1000 Genomes Project (1000GP) variant catalog and the human reference genome have homogenous and regular features.
+Graphs of this form are seeing increasing use in variant-aware resequencing analyses \cite{crysnanto2019sequence}.
+The performance of data structures in loading and manipulating them is thus of general interest.
+
+We first evaluated the scaling performance of the various \textsc{HandleGraph} implementations relative to node count for each of the nuclear chromosomes in the 1000GP (Figure \ref{fig:1000GPchroms}).
+We find that for all methods, load memory scales almost perfectly with node count, with an average $R^2 \approx 0.998$.
+Due to differences in variant density among the chromosomes, the average correlation relative to sequence length is lower, $R^2 \approx 0.986$.
+
+In Table \label{table:1000GPchroms}, we report the average memory performance of the methods relative to graph sequence length, and also the iteration performance in terms of elements per second.
+We find that the best-performing method in terms of memory usage is \textsc{PackedGraph}, which consumes around $1/20$th the memory of \textsc{vg} per base-pair of graph in the 1000GP set.
+However, it provides significantly better iteration performance for nodes (handles), edges, and path steps.
+\textsc{HashGraph} and \textsc{xg} have similar iteration performance, but \textsc{xg}, by virtue of its use of compressed, static data structures, requires less than half as much memory.
+\textsc{odgi} optimized for efficient dynamic operations on graphs with higher path coverage, and in general is not as performant as other methods on this set.
+
+\section{Discussion}
+
+We have presented a set of simple formalisms, the \textsc{HandleGraph} abstraction, which provides a coherent interface to address and manipulate the components of a genome variation graph.
+To explore the utility of this model, we implemented data structures to encode variation graphs and matched them to this interface.
+This allowed us to directly compare these \textsc{HandleGraph} implementations on a diverse set of genome graphs obtained during our research work.
+These experiments reveal that the computational expense of \textsc{vg} is not a necessary feature of genome graph implementations.
+The best-performing models require less than an order of magnitude as much memory as \textsc{vg} while providing higher performance for basic graph access operation and element iteration.
+
+The efficiency of these methods and their encapsulation within a coherent programming interface will support their reuse within a diverse set of application domains.
+Variation graphs have deep similarity with graphs used in assembly.
+In principle, these libraries could be used as the basis for assembly methods, or for genotyping and haplotype inference methods based on graphs \cite{garg2018graph}
+
+Ongoing work is establishing large numbers of whole genome assemblies for humans (\url{https://humanpangenome.org/}).
+Improvements in sequencing technology are likely to make such surveys routine.
+It is natural to consider a pangenome reference system, based on the whole genome alignments of such assemblies, as the output of these pangenome projects.
+Recent results demonstrate that many basic bioinformatic problems can be generalized to operate on such structures.
+Should these pangenome representations become common or standard, then variation graph data structures like those we have presented here will form the basis for a wide range of pangenomic methods.
 
 % The \texttt{libhandlegraph} and \texttt{libbdsg} C++ libraries provide high-performance sequence graph implementations that encourage quality coding. Python bindings are also available. This software can help developers write future pangenomics applications. 
 
