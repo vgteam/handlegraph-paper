@@ -158,7 +158,7 @@ Paths are stored in a set of linked lists, with a hash table mapping between nod
 This arrangement was tenable for the early development of algorithms working on variation graphs.
 Its inefficiency, caused by unnecessary overheads and data duplication, has generated significant difficulty for groups working with \textsc{vg}.
 The other \textsc{HandleGraph} implementations respond to the limitations of this approach.
-Its documentation can be found at \url{https://vgteam.github.io/vg/classvg_1_1VG.html}.
+%Its documentation can be found at \url{https://vgteam.github.io/vg/classvg_1_1VG.html}.
 
 \subsubsection{\textsc{xg}}
 
@@ -182,7 +182,7 @@ This adjacency list encoding is appropriate for genome graphs, which are typical
 Each node object maintains a vector of pointers to the path steps that traverse it.
 Most of \textsc{HashGraph}'s component data structures are uncompressed STL objects which can be used efficiently in their native in-memory arrangement.
 \textsc{HashGraph} trades memory for time, and thus is most appropriate for small graphs (from small genomes or small regions of larger genomes) or for high-memory compute environments.
-Its implementation can be found at \url{https://github.com/vgteam/libbdsg/blob/master/include/hash_graph.hpp}.
+%Its implementation can be found at \url{https://github.com/vgteam/libbdsg/blob/master/include/hash_graph.hpp}.
 
 \subsubsection{\textsc{odgi}}
 
@@ -206,7 +206,7 @@ Doing so does not affect the amortized asymptotic run time of graph operations i
 The vector uses a windowed bit compression scheme in which only one value within a window is maintained at its full bit-width.
 The remaining entries are represented as differences from this value.
 In the typical case where adjacent entries in the vector are highly correlated, this helps keep the bit-width low and the compression high.
-Its implementation can be found at \url{https://github.com/vgteam/libbdsg/blob/master/src/packed_graph.cpp}.
+%Its implementation can be found at \url{https://github.com/vgteam/libbdsg/blob/master/src/packed_graph.cpp}.
 
 %Longer-range jumps do occur, but they tend to be more rare.
 %Modifying path step records can be expensive, but when the number of traversing paths is relatively small, it remains in higher caches and can be accomplished efficiently.
@@ -218,6 +218,11 @@ This allows the data structures to be used in Python applications, significantly
 This functionality is documented at \url{https://pangenome.github.io/odgi/odgipy.html}, and a tutorial is available at \url{https://odgi.readthedocs.io/en/latest/rst/tutorial.html}.
 This documentation also serves as useful introduction to the \textsc{HandleGraph} API.
 %The full implementation of \textsc{odgi} can be found at \url{https://github.com/vgteam/libbdsg/blob/master/src/odgi.cpp}.
+
+\subsection{Code availability}
+
+Both \texttt{libhandlegraph} and \texttt{libbdsg} are open source under an MIT License.
+They are available on GitHub at \url{https://github.com/vgteam/libhandlegraph} and \url{https://github.com/vgteam/libbdsg}.
 
 \section{Evaluation}
 
