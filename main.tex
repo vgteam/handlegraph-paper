@@ -145,6 +145,7 @@ Two implementations, \textsc{vg} and \textsc{xg}, have been described previously
 The others are combined in the \texttt{libbdsg} library (\url{https://github.com/vgteam/libbdsg}), which provides three concrete implementations: \textsc{HashGraph}, \textsc{odgi}, and \textsc{PackedGraph}.
 Each implementation represents a different tradeoff in terms of speed, memory use, and capabilities.
 All of the implementations except \textsc{xg} are dynamic.
+Since all of these implementations use the same interface, the \texttt{libhandlegraph} header files serve as the most effective developer documentation for their functionality.
 %Readers seeking a precise description of each implementation should refer to developer documentation and code referenced in this section.
 
 \subsubsection{\textsc{vg}}
