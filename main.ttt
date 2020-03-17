@@ -1,0 +1,23 @@
+\begin{table}
+  \centering
+\begin{tabular}{l||c|c|c|c|c}
+model & build bytes/bp & load bytes/bp & handles/s & edges/s & steps/s \\
+\hline
+vg &   80.2 &   77.2  &   24610804 &    2818795 &     2862661 \\
+hg &   36.7 &   23.9  &   59523906 &   18944603 &   127232984 \\
+og &   30.3 &   13.7  &   24143220 &   11518919 &     8186908 \\
+pg &   37.6 &   3.80  &   63652595 &    4554284 &    24298536 \\
+xg &   54.3 &   9.31  &   54223417 &   20487877 &   116951120 \\
+\hline
+\end{tabular}
+\caption{
+  \textbf{Performance on 1000 Genomes Project chromosome graphs.}
+  Average build memory, load memory, and iteration times for graph elements for the chromosome-level graphs built from all the variants in the 1000 Genomes Project and the GRCh37 reference genome against which the variant set was originally reported.
+  \textsc{vg} requires $\approx$ 20 times as much memory to load the graphs as \textsc{PackedGraph}, while even the most costly \textsc{HandleGraph} model (\textsc{HashGraph}) requires $\approx$ 1/3 as much memory.
+  In these graphs, \textsc{odgi} provides the lowest performance for handle iteration.
+  However, in all other metrics, \textsc{vg} performs significantly worse than the other models.
+}
+\label{table:1000GPchroms}
+\end{table}
+\efloatseparator
+ 
