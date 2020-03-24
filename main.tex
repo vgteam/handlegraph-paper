@@ -55,20 +55,21 @@ Using na\"ive data structures to identify and provide random access to elements 
 However, the total information content is only incrementally more than in the total sequence set of the pangenome.
 This suggests that significant memory savings should be possible.
 
-Early versions variation graph toolkit (\textsc{vg}) \cite{Garrison_2018} provides a cautionary tale of such a na\"ive implementation.
-\textsc{vg} usds full-width machine words as identifiers for graph elements, stored the elements and graph topology in a set of hash tables, and linked identifiers to elements with raw pointers.
-Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit consumed more than 300 GB of memory, which is $\sim$30 times as large as the serialized representation \cite{Garrison_2019}.
+Early versions variation graph toolkit (\textsc{vg}) \cite{Garrison_2018} have provided a cautionary tale of such a na\"ive implementation.
+\textsc{vg} used full-width machine words as identifiers for graph elements, stored the elements and graph topology in a set of hash tables, and linked identifiers to elements with raw pointers.
+Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit used to consume more than 300 GB of memory, which is $\sim$30 times as large as the serialized representation \cite{Garrison_2019}.
 
-Although \textsc{vg} provided a memory-efficient succinct representation of the graph (\textsc{xg}) that is used during read mapping and variant calling, the succinct representation did not allow for dynamic updates to the graph.
+Although \textsc{vg} provided a memory-efficient succinct representation of the graph (\textsc{xg}) that could be used during read mapping and variant calling, the succinct representation did not allow for dynamic updates to the graph.
 As a result, graph-modifying steps in \textsc{vg} pangenomic analysis pipelines had to break large graphs into smaller pieces, often connected components that correspond to chromosomes.
 Unfortunately, this strategy is not tenable for all graphs.
 For instance, many whole genome alignment and assembly graphs consist of a single giant component that cannot be partitioned easily.
 
 To overcome this limitation, we have developed three new graph genome data structures that are both dynamic, in that they allow efficient updates and edits, \emph{and} succinct, in that they require memory on the order of the graph's information content.
-Here, we compare the performance of these data structures to those in \textsc{vg} and \textsc{xg} using a diverse collection of genome graphs obtained during our work in graphical pangenomics.
+Here, we compare the performance of these data structures to those originally in \textsc{vg} as well as \textsc{xg} using a diverse collection of genome graphs obtained during our work in graphical pangenomics.
 
 In addition to demonstrating the possibility of working with large, complex graphs in small amounts of memory, these implementations expose a common API based on the \textsc{HandleGraph} model described below.
 This model provides a consistent, reliable interface to genome graphs based on their fundamental elements.
+The \textsc{vg} toolkit has been refactored to use this API as its default means of serializing and manipulating graphs since version 1.22.0. 
 
 %To support reuse by other researchers,
 We package these implementations behind equivalent C++ and Python APIs in \texttt{libbdsg}.
@@ -98,9 +99,6 @@ Some paths correspond to sequences of interest, such as reference genomes or ann
 Because paths like these are so frequently important in practice, our formalism also includes paths as a first class object, embedded in the graph.
 
 \subsection{The \textsc{HandleGraph} interface}
-
-Some paths correspond to sequences of interest, such as reference genomes or annotations of the reference.
-Because paths like these are so frequently important in practice, our formalism also includes paths as a first class object, embedded in the graph.
 
 The \texttt{libhandlegraph} library describes a generic interface that exposes basic operations on our sequence graph data model.
 The interface uses ``handles'' (opaque references modeled after the concept of a file handle) in order to remain agnostic about the backing implementation of the graph.
@@ -160,6 +158,8 @@ Paths are stored in a set of linked lists, with a hash table mapping between nod
 This arrangement was tenable for the early development of algorithms working on variation graphs.
 Its inefficiency, caused by unnecessary overheads and data duplication, has generated significant difficulty for groups working with \textsc{vg}.
 The other \textsc{HandleGraph} implementations respond to the limitations of this approach.
+In version 1.22.0, vg was updated to use \textsc{HashGraph} (below) as the default format, though it remains compatible with all implementations described in this paper via the \textsc{HandleGraph} API.
+
 %Its documentation can be found at \url{https://vgteam.github.io/vg/classvg_1_1VG.html}.
 
 \subsubsection{\textsc{xg}}
@@ -230,7 +230,7 @@ They are available on GitHub at \url{https://github.com/vgteam/libhandlegraph} a
 
 \subsection{Human genome with structural variants}
 
-We measured the core operation performance of the four graph implementations and the graph class from the popular \textsc{vg} software.
+We measured the core operation performance of the four graph implementations and the graph class from the popular \textsc{vg} software (as implemented prior to version 1.22.0).
 In particular, we measured 1) memory usage to construct a graph, 2) time to construct a graph, 3) memory usage to load an already-constructed graph, and 4) time to access nodes, edges, and steps of a path.
 The presented results are from a graph describing the structural variants of the Human Genome Structural Variation Consortium \cite{chaisson2019multi}.
 The results generally match our expectations based on the implementations' design goals (Figure \ref{fig:hgsvc}).
@@ -276,7 +276,7 @@ To explore the utility of this model, we implemented data structures to encode v
 This allowed us to directly compare these \textsc{HandleGraph} implementations on a diverse set of genome graphs obtained during our research.
 These experiments reveal that genome graphs need not pay the computational expense of the early versions of \textsc{vg}.
 The best-performing models require an order of magnitude less memory than \textsc{vg} while providing higher performance for basic graph access operation and element iteration.
-For these reasons, \textsc{vg} is currently in the process of transitioning to using these newer graph implementations. 
+For these reasons, \textsc{vg} has transitioned to using these newer graph implementations. 
 
 The efficiency of these methods and their encapsulation within a coherent programming interface will support their reuse within a diverse set of application domains.
 Variation graphs have deep similarity with graphs used in assembly; these libraries could be used as the basis for assembly methods.
