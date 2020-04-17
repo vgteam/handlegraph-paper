@@ -1,61 +1,74 @@
-\documentclass{article}
-\usepackage{hyperref}
-\usepackage[utf8]{inputenc}
-\usepackage{graphicx}
-\usepackage{subcaption}
-\usepackage[symbol]{footmisc}
-\usepackage{todonotes}
-\usepackage{placeins}
-\usepackage[nolists,nomarkers]{endfloat}
+\PassOptionsToPackage{utf8}{inputenc}
+\documentclass{bioinfo}
 
-\bibliographystyle{plain}
-
-%\title{libbdsg and libhandlegraph: High-performance sequence graph implementations for graphical pangenomics}
-\title{Succinct dynamic genome variation graphs} % for graphical pangenomics}
-  %libbdsg and libhandlegraph: High-performance sequence graph implementations for graphical pangenomics}
-\author{Jordan M. Eizenga$^*$
-  \and Adam M. Novak$^*$
-  \and Emily Kobayashi
-  \and Flavia Villani
-  \and Cecilia Cisar
-  \and Simon Heumos
-  \and Glenn Hickey
-  \and Vincenza Colonna
-  \and Benedict Paten
-  \and Erik Garrison$^\dagger$}
-
+\usepackage[draft]{hyperref}
 
 \newcommand{\vocab}{\textbf}
 
+\copyrightyear{XXXX} \pubyear{XXXX}
+
+\access{Advance Access Publication Date: Day Month Year}
+\appnotes{Genome Analysis}
+
 \begin{document}
+\firstpage{1}
+
+\subtitle{Genome Analysis}
+
+\title[short Title]{Succinct dynamic variation graphs}
+\author[Sample \textit{et~al}.]{
+Jordan M. Eizenga\,$^{\text{\sfb 1, \sfb 2} \dagger}$, 
+Adam M. Novak\,$^{\text{\sfb 1, \sfb 2} \dagger}$, 
+Emily Kobayashi\,$^{\text{\sfb 1, \sfb 2, \sfb 3}}$,
+Flavia Villani\,$^{\text{\sfb 4}}$,
+Cecilia Cisar\,$^{\text{\sfb 1, \sfb 2}}$,
+Simon Heumos\,$^{\text{\sfb 5}}$,
+Glenn Hickey\,$^{\text{\sfb 1, \sfb 2}}$,
+Vincenza Colonna\,$^{\text{\sfb 4}}$,
+Benedict Paten\,$^{\text{\sfb 1, \sfb 2}}$,
+and Erik Garrison\,$^{\text{\sfb 1, \sfb 2}*}$
+}
+
+\address{
+$^{\text{\sf 1}}$Genomics Institute, University of California Santa Cruz, Santa Cruz, CA, USA, 95064, and \\
+$^{\text{\sf 2}}$Biomolecular Engineering and Bioinformatics, University of California Santa Cruz, Santa Cruz, CA, USA, 95064, \\
+$^{\text{\sf 3}}$Bioinformatics and Systems Biology, University of California San Diego, La Jolla, CA, USA, 92093, \\
+$^{\text{\sf 4}}$Institute of Genetics and Biophysics, Consiglio Nazionale di Ricerche, Naples, Italy, 80131, and \\
+$^{\text{\sf 5}}$Zentrum f\"ur Quantitative Biologie , Universitat T\"ubingen, T\"ubingen, Germany
+}
+
+\corresp{$^\ast$To whom correspondence should be addressed. \\
+$^\dagger$Contributed equally.}
+
+\history{Received on XXXXX; revised on XXXXX; accepted on XXXXX}
+
+\editor{Associate Editor: XXXXXXX}
+
+\abstract{
+\textbf{Motivation:} Pangenomics is a growing field within computational genomics.
+Many pangenomic analyses use bidirected sequence graphs as their core data model.
+However, implementing and correctly using this data model can be difficult, and the scale of pangenomic data sets can be challenging to work at.
+These challenges have impeded progress in this field.\\
+\textbf{Results:} Here we present a stack of two C++ libraries, \texttt{libbdsg} and \texttt{libhandlegraph}, which use a simple, field-proven interface, designed to expose elementary features of these graphs while preventing common graph manipulation mistakes.
+The libraries also provide a Python binding.
+Using a diverse collection of pangenome graphs, we demonstrate that these tools allow for efficient construction and manipulation of large genome graphs with dense variation.
+For instance, the speed and memory usage is up to an order of magnitude better than the prior graph implementation in the \textsc{vg} toolkit, which has now transitioned to using \texttt{libbdsg}'s implementations.\\
+\textbf{Availability:} \texttt{libhandlegraph} and \texttt{libbdsg} are available under an MIT License from \url{https://github.com/vgteam/libhandlegraph} and \url{https://github.com/vgteam/libbdsg}. \\
+\textbf{Contact:} \href{ergarris@ucsc.edu}{ergarris@ucsc.edu} \\
+\textbf{Supplementary information:} Supplementary data are available at \textit{Bioinformatics} online.
+}
 
 \maketitle
 
-\begin{abstract}
-
-Pangenomics is a growing field within computational genomics.
-Many pangenomic analyses use bidirected sequence graphs as their core data model.
-However, implementing and correctly using this data model can be difficult, and the scale of pangenomic data sets can be challenging to work at.
-Here we present a stack of two C++ libraries, \texttt{libbdsg} and \texttt{libhandlegraph}, which use a simple, field-proven interface, designed to expose elementary features of these graphs while preventing common graph manipulation mistakes.
-The libraries also provide a Python binding.
-Using a diverse collection of pangenome graphs, we demonstrate that these tools allow for efficient construction and manipulation of large genome graphs with dense variation.
-For instance, the speed and memory usage is up to an order of magnitude better than the pre-existing graph implementation in the \textsc{vg} toolkit.
-To realize these benefits, \textsc{vg} has transitioned to using \texttt{libbdsg}'s graph implementations.
-
-\end{abstract}
-
 \section{Introduction}
 
-\footnotetext[1]{Contributed equally}
-\footnotetext[2]{erik.garrison@ucsc.edu}
-
 With falling sequencing costs, the genomics community has sequenced increasingly many individuals within certain species.
-For example, hundreds of thousands of deeply sequenced human genomes are now available.
-The novel challenges of analyzing data sets of this scale have led to the development of \vocab{computational pangenomics}, which focuses on analyzing populations of genomes rather than individuals \cite{computational2016computational}.
+For example, hundreds of thousands of deeply-sequenced human genomes are now available.
+The novel challenges of analyzing data sets of this scale have led to the development of \vocab{computational pangenomics}, which focuses on analyzing populations of genomes rather than individuals \citep{computational2016computational}.
 
-Much of the research in computational pangenomics has coalesced around graph-based approaches for representing populations of genomes \cite{Paten_2017}.
+Much of the research in computational pangenomics has coalesced around graph-based approaches for representing populations of genomes \citep{Paten_2017}.
 Unlike conventional string-based representations, graph data structures provide a coherent modeling language to represent different types of genomic variation like substitutions, insertions, deletions, and more complex genomic events.
-They also compactly represent many-way relationships between related genomes, such as whole genome alignments \cite{kehr2014genome}.
+They also compactly represent many-way relationships between related genomes, such as whole genome alignments \citep{kehr2014genome}.
 
 Graph-based data structures also present new computational challenges.
 In addition to sequence, genome graphs must represent topology.
@@ -67,9 +80,9 @@ Using na\"ive data structures to identify and provide random access to elements 
 However, the total information content is only incrementally more than in the total sequence set of the pangenome.
 This suggests that significant memory savings should be possible.
 
-Early versions variation graph toolkit (\textsc{vg}) \cite{Garrison_2018} have provided a cautionary tale of such a na\"ive implementation.
+Early versions variation graph toolkit (\textsc{vg}) \citep{Garrison_2018} have provided a cautionary tale of such a na\"ive implementation.
 \textsc{vg} used full-width machine words as identifiers for graph elements, stored the elements and graph topology in a set of hash tables, and linked identifiers to elements with raw pointers.
-Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit used to consume more than 300 GB of memory, which is $\sim$30 times as large as the serialized representation \cite{Garrison_2019}.
+Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit used to consume more than 300 GB of memory, which is $\sim$30 times as large as the serialized representation \citep{Garrison_2019}.
 
 Although \textsc{vg} provided a memory-efficient succinct representation of the graph (\textsc{xg}) that could be used during read mapping and variant calling, the succinct representation did not allow for dynamic updates to the graph.
 As a result, graph-modifying steps in \textsc{vg} pangenomic analysis pipelines had to break large graphs into smaller pieces, often connected components that correspond to chromosomes.
@@ -88,14 +101,8 @@ We package these implementations behind equivalent C++ and Python APIs in \textt
 This software library will reduce the need for individual research groups to continually reimplement these core data structures.
 These dynamic \textsc{HandleGraph} libraries will ease the development of algorithms that work on large, complex pangenome graphs by making it easy to store them in reasonable amounts of working memory and manipulate them in reasonable amounts of time.
 
-%In response, we present a suite of
 
-%We have developed a stack of C++ libraries providing high-performance sequence graphs for graphical pangenomics applications.
-%We also provide a Python binding so the components are accessible to Python developers as well.
-
-%The C++ stack consists of two components.
-%First, we have developed an abstract interface for sequence graphs, based on our experience in the VG project.
-%Second, we have developed three concrete implementations of the sequence graph interface, which make different trade-offs between speed, memory, and complexity, and which attempt to provide good coverage of the design space. 
+\begin{methods}
 
 \section{Implementation}
 
@@ -115,19 +122,39 @@ Because paths like these are so frequently important in practice, our formalism 
 The \texttt{libhandlegraph} library describes a generic interface that exposes basic operations on our sequence graph data model.
 The interface uses ``handles'' (opaque references modeled after the concept of a file handle) in order to remain agnostic about the backing implementation of the graph.
 
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{figures/GRaphchrXpaper.pdf}
+	\end{center}
+	\caption{{\label{fig:graph}
+        \textbf{Entities in the bidirected sequence graph.}
+        Top: a variation graph showing \emph{nodes} (yellow rectangles), each of which contain a forward and reverse \emph{strand} (red solid and dashed rectangles, respectively).
+        Strands show the node identifier, the direction ($+$ or $-$), and the sequence of the strand.
+        Note that reverse strands show the reverse complement sequence of the forward strand.
+        All \emph{edges} are shown as connections between nodes, with forward-to-forward edges denoted by solid lines, while reverse-to-reverse edges denoted by dotted lines.
+        Two edges that invert from forward to reverse and reverse to forward are shown with dotted lines.
+        Edges run from the strand at their beginning to their end, as indicated by the arrowhead.
+        Bottom: an illustration of four \emph{paths}.
+        (Each has an implicit handle, and a name, which are omitted for brevity.)
+        Each path is shown in its natural direction as a series of connected \emph{steps} that refer to strands in the graph.
+        The first two paths differ by a SNP, with one passing through \texttt{2+:T}, and the other through \texttt{3+:G}.
+        The third path is the reverse complement of the first.
+        The fourth is the same as the first, but contains an inversion, passing through \texttt{5-:AATC} rather than \texttt{5+:GATT}.
+      }
+    }
+\end{figure}
+
 The \textsc{HandleGraph} model focuses on five fundamental entities in bidirected sequence graphs (Figure \ref{fig:graph}):
 
--- \emph{Nodes} identify pairs of complementary DNA strands and have unique numerical identifiers (IDs).
+\begin{itemize}
+\item \emph{Nodes} identify pairs of complementary DNA strands and have unique numerical identifiers (IDs).
+\item \emph{Strands} identify one strand of a node's DNA sequence.
+\item \emph{Edges} link pairs of strands, in order.
+\item \emph{Paths} represent sequences as walks through the graph.
+\item \emph{Steps} describe paths' visits to nodes' strands.
+\end{itemize}
 
--- \emph{Strands} identify one strand of a node's DNA sequence.
-
--- \emph{Edges} link pairs of strands, in order.
-
--- \emph{Paths} represent sequences as walks through the graph.
-
--- \emph{Steps} describe paths' visits to nodes' strands.
-
-The defining feature of the model is that \textbf{none of these entities are accessed directly}.
+The defining feature of the model is that none of these entities are accessed directly.
 Instead, only \emph{handles}, or references, to strands, edges, paths, and steps are available.
 The \texttt{libhandlegraph} interface requires sequence graph implementations to be able to provide or consume these handles for all queries.
 %The handles are then passed back to the API to refer to these entities when performing operations and making queries.
@@ -153,7 +180,7 @@ Furthermore, the interface is able to be memory-safe by eliminating raw pointers
 
 We consider five implementations of the \textsc{HandleGraph} model.
 To ground our experimental results, here we we provide a high-level overview of each implementation.
-Two implementations, \textsc{vg} and \textsc{xg}, have been described previously \cite{Garrison_2018,Garrison_2019}.
+Two implementations, \textsc{vg} and \textsc{xg}, have been described previously \citep{Garrison_2018,Garrison_2019}.
 The others are combined in the \texttt{libbdsg} library (\url{https://github.com/vgteam/libbdsg}), which provides three concrete implementations: \textsc{HashGraph}, \textsc{odgi}, and \textsc{PackedGraph}.
 Each implementation represents a different tradeoff in terms of speed, memory use, and capabilities.
 All of the implementations except \textsc{xg} are dynamic.
@@ -162,7 +189,7 @@ Since all of these implementations use the same interface, the \texttt{libhandle
 
 \subsubsection{\textsc{vg}}
 
-We have extended the data model in \textsc{vg}, previously described in \cite{Garrison_2018}, to match the \textsc{HandleGraph} API.
+We have extended the data model in \textsc{vg}, previously described in \citep{Garrison_2018}, to match the \textsc{HandleGraph} API.
 The backing data structures used by the model remain the same.
 The graph entities are stored as objects in a backing vector, and referred to internally by hash tables that map between node identifiers and pointers into this vector.
 Edges are indexed in a hash table mapping pairs of handles to edge objects.
@@ -177,7 +204,7 @@ In version 1.22.0, vg was updated to use \textsc{HashGraph} (below) as the defau
 \subsubsection{\textsc{xg}}
 
 \textsc{xg} was initially developed in response to the memory and runtime costs of \textsc{vg}, which prevent its application to large graphs.
-It additionally provides positional indexes over paths that are required for read mapping and variant calling, and is the graph data model used in most established bioinformatic operations on variation graphs \cite{Garrison_2018,hickey2020genotyping}.
+It additionally provides positional indexes over paths that are required for read mapping and variant calling, and is the graph data model used in most established bioinformatic operations on variation graphs \citep{Garrison_2018,hickey2020genotyping}.
 Unlike other \textsc{HandleGraph} implementations, \textsc{xg} is a static graph index.
 This permits a more powerful set of efficient queries against the graph, especially for paths.
 The encoding is designed to balance speed and low memory usage.
@@ -204,9 +231,9 @@ Most of \textsc{HashGraph}'s component data structures are uncompressed STL obje
 This encoding is split between graph topology and paths, which is important for achieving a good balance of runtime performance and memory usage on real-world graphs with large path sets.
 Each node's sequence and edges are encoded in a byte array using a variable-length integer encoding scheme.
 Edges are described in terms of a relative offset between the rank of this node in the sorted array of nodes of the graph and the node to which the edge arrives.
-The set of steps traversing the node is recorded in a second dynamic integer vector, compressed so that only the largest integer entry is stored at full bit-width \cite{prezza2017framework}.
+The set of steps traversing the node is recorded in a second dynamic integer vector, compressed so that only the largest integer entry is stored at full bit-width \citep{prezza2017framework}.
 Each step contains a path identifier, relative ranks of the previous and next nodes on the path, and the ranks of the previous and next steps among the path steps recorded at their nodes.
-This path encoding scheme is similar to that used in the dynamic GBWT \cite{Siren_2019}, but differs in that the paths are not prefix-sorted.
+This path encoding scheme is similar to that used in the dynamic GBWT \citep{Siren_2019}, but differs in that the paths are not prefix-sorted.
 %It is designed to exploit the sparse and orderable nature of genome graphs.
 If each path step tends to move only a short distance in the sorted nodes of the graph (e.g. from $n_{5} \to n_{7}$), then the maximum bit-width of the path vector will be low, resulting in good compression.
 
@@ -227,7 +254,7 @@ In the typical case where adjacent entries in the vector are highly correlated, 
 
 \subsection{Python binding}
 
-We have implemented a Python binding to the graph implementations in \texttt{libbdsg} using Pybind11 \cite{pybind11}.
+We have implemented a Python binding to the graph implementations in \texttt{libbdsg} using Pybind11 \citep{pybind11}.
 This allows the data structures to be used in Python applications, significantly lowering the barrier-to-entry for pangenomic application developers.
 This functionality is documented at \url{https://bdsg.readthedocs.io}, including a tutorial.
 This documentation also serves as useful introduction to the \textsc{HandleGraph} API.
@@ -239,16 +266,69 @@ Both \texttt{libhandlegraph} and \texttt{libbdsg} are open source under an MIT L
 They are available on GitHub at \url{https://github.com/vgteam/libhandlegraph} and \url{https://github.com/vgteam/libbdsg}.
 Extensive documentation of these libraries and their respective graph implementations is available at \url{https://pangenome.github.io/}.
 
+\end{methods}
+
+%\begin{figure}[!tpb]%figure2
+%%\centerline{\includegraphics{fig02.eps}}
+%\caption{Caption, caption.}\label{fig:02}
+%\end{figure}
+
+
 \section{Evaluation}
 
 \subsection{Human genome with structural variants}
 
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{figures/HGSVC_sorted_gfa.png}
+	\end{center}
+	\caption{{\label{fig:hgsvc}
+        \textbf{Performance on a graph of structural variants from the HGSVC.}
+        Abbreviations used here and in subsequent figures and tables: vg = \textsc{vg}, hg = \textsc{HashGraph}, og = \textsc{odgi}, pg = \textsc{PackedGraph}, xg = \textsc{xg}.
+        All four new graph implementations compare favorably to \textsc{vg}.
+        \textsc{PackedGraph} tends to be the most memory efficient, \textsc{HashGraph} tends to be the fastest, and \textsc{odgi} is balanced in between.
+        \textsc{xg} provides good performance on both memory usage and speed, but it is static.
+        }
+      }
+\end{figure}
+
 We measured the core operation performance of the four graph implementations and the graph class from the popular \textsc{vg} software (as implemented prior to version 1.22.0).
 In particular, we measured 1) memory usage to construct a graph, 2) time to construct a graph, 3) memory usage to load an already-constructed graph, and 4) time to access nodes, edges, and steps of a path.
-The presented results are from a graph describing the structural variants of the Human Genome Structural Variation Consortium \cite{chaisson2019multi}.
+The presented results are from a graph describing the structural variants of the Human Genome Structural Variation Consortium \citep{chaisson2019multi}.
 The results generally match our expectations based on the implementations' design goals (Figure \ref{fig:hgsvc}).
 
 \subsection{Genome graph collection}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{figures/build_and_load_memory.png}
+  \caption{
+    \label{fig:prof1}
+    \textbf{Memory requirements for model construction and loading.}
+    Memory costs versus graph sequence size for the graph collection, colored by \textsc{HandleGraph} model.
+    The memory requirements for graph construction tend to be higher than those for loading the graph model.
+    All methods show fixed overheads of several megabytes, seen in the flat tail to the left of both plots.
+    Outside of this region, all methods show roughly linear scaling in both build and load costs per input base pair.
+    The relative differences in memory costs appear to be stable between different methods across many orders of magnitude in graph size.
+    Notably, \textsc{vg} has approximately the same build and load costs, as the data structures used are the same.
+    The other methods tend to use auxilary data structures at build time, and so require more memory to build the data structure than to load it.
+    }
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{figures/iteration_per_second.png}
+  \caption{
+    \label{fig:prof2}
+    \textbf{Graph element enumeration performance.}
+    Iteration performance for edges, nodes, and path steps for the full graph collection, shown in terms of elements per second.
+    \textsc{HashGraph} provides the highest performance for all element iteration types on smaller graphs, but this performance falls of with larger graphs, presumably due to scaling properties of the backing hash tables.
+    The same pattern can be seen for \textsc{vg}, although the overall performance is worse.
+    Although it has the worst edge iteration performance, \textsc{PackedGraph} provides good performance on node and path step iteration.
+    The relative path encoding in \textsc{odgi} yields poor performance on path iteration, and node decoding overheads appear to reduce its node iteration performance, but it has good graph topology traversal performance, perhaps due to cache coherency of the edge encoding.
+    \textsc{xg} provides excellent iteration performance in all cases.
+    }
+\end{figure}
 
 To compare the methods' performances across a wide variety of different graphs, we applied each to a collection of 2299 graphs collected during our research on graphical pangenomics.
 For each graph and graph implementation, we measured the same metrics described in the previous section as well as various graph properties including size, edge count, cyclicity, and path depth.
@@ -269,131 +349,12 @@ For path enumeration, the highest-performing methods are \textsc{xg} and \textsc
 Variation graphs built from the 1000 Genomes Project (1000GP) variant catalog and the human reference genome have fairly homogenous and regular features.
 In addition, they have connected components of very different sizes, each corresponding to a chromosome.
 This provides a natural, fairly controlled means to explore the scaling behavior of our data structures.
-Moreover, graphs of this form are seeing increasing use in variant-aware resequencing analyses \cite{crysnanto2019sequence}.
+Moreover, graphs of this form are seeing increasing use in variant-aware resequencing analyses \citep{crysnanto2019sequence}.
 Thus, the performance of data structures on these graphs is of general interest.
-
-We first evaluated the scaling performance of the various \textsc{HandleGraph} implementations relative to node count for each of the nuclear chromosomes in the 1000GP (Figure \ref{fig:1000GPchroms}).
-We find that for all methods, load memory scales almost perfectly with node count, with an average $R^2 = 0.998$.
-Due to differences in variant density among the chromosomes, the average correlation relative to sequence length is lower ($R^2 = 0.986$).
-
-In Table \ref{table:1000GPchroms}, we report the average memory performance of the methods relative to graph sequence length, and also the iteration performance in terms of elements per second.
-We find that the best-performing method in terms of memory usage is \textsc{PackedGraph}, which consumes around $1/20$th the memory of \textsc{vg} per base-pair of graph in the 1000GP set.
-However, it provides significantly better iteration performance for nodes (handles), edges, and path steps.
-\textsc{HashGraph} and \textsc{xg} have similar iteration performance, but \textsc{xg}, by virtue of its use of compressed, static data structures, requires less than half as much memory.
-\textsc{odgi} optimized for efficient dynamic operations on graphs with higher path coverage, and in general is not as performant as other methods on this set.
-
-\section{Discussion}
-
-We have presented a set of simple formalisms, the \textsc{HandleGraph} abstraction, which provides a coherent interface to address and manipulate the components of a genome variation graph.
-To explore the utility of this model, we implemented data structures to encode variation graphs and matched them to this interface.
-This allowed us to directly compare these \textsc{HandleGraph} implementations on a diverse set of genome graphs obtained during our research.
-These experiments reveal that genome graphs need not pay the computational expense of the early versions of \textsc{vg}.
-The best-performing models require an order of magnitude less memory than \textsc{vg} while providing higher performance for basic graph access operation and element iteration.
-For these reasons, \textsc{vg} has transitioned to using these newer graph implementations. 
-
-The efficiency of these methods and their encapsulation within a coherent programming interface will support their reuse within a diverse set of application domains.
-Variation graphs have deep similarity with graphs used in assembly; these libraries could be used as the basis for assembly methods.
-They could also be used for genotyping and haplotype inference methods based on graphs \cite{garg2018graph}.
-
-Ongoing work is establishing large numbers of highly-contiguous whole genome assemblies for humans (\url{https://humanpangenome.org/}).
-Improvements in sequencing technology are likely to make such surveys routine.
-It is natural to consider a pangenome reference system, based on the whole genome alignments of such assemblies, as the output of these pangenome projects.
-Recent results demonstrate that many basic bioinformatic problems can be generalized to operate on such structures.
-Should these pangenome representations become common or standard, then variation graph data structures like those we have presented here will form the basis for a wide range of pangenomic methods.
-
-% The \texttt{libhandlegraph} and \texttt{libbdsg} C++ libraries provide high-performance sequence graph implementations that encourage quality coding. A Python binding is also available. This software can help developers write future pangenomics applications. 
-
-% TODO: we should write a guide on GitHub for how to use
-
-\bibliography{references.bib}
-
-\FloatBarrier
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=1.0\textwidth]{figures/GRaphchrXpaper.pdf}
-	\end{center}
-	\caption{{\label{fig:graph}
-        \textbf{Entities in the bidirected sequence graph.}
-        Top: a variation graph showing \emph{nodes} (yellow rectangles), each of which contain a forward and reverse \emph{strand} (red solid and dashed rectangles, respectively).
-        Strands show the node identifier, the direction ($+$ or $-$), and the sequence of the strand.
-        Note that reverse strands show the reverse complement sequence of the forward strand.
-        All \emph{edges} are shown as connections between nodes, with forward-to-forward edges denoted by solid lines, while reverse-to-reverse edges denoted by dotted lines.
-        Two edges that invert from forward to reverse and reverse to forward are shown with dotted lines.
-        Edges run from the strand at their beginning to their end, as indicated by the arrowhead.
-        Bottom: an illustration of four \emph{paths}.
-        (Each has an implicit handle, and a name, which are omitted for brevity.)
-        Each path is shown in its natural direction as a series of connected \emph{steps} that refer to strands in the graph.
-        The first two paths differ by a SNP, with one passing through \texttt{2+:T}, and the other through \texttt{3+:G}.
-        The third path is the reverse complement of the first.
-        The fourth is the same as the first, but contains an inversion, passing through \texttt{5-:AATC} rather than \texttt{5+:GATT}.
-      }
-    }
-\end{figure}
-
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=1.0\textwidth]{figures/HGSVC_sorted_gfa.png}
-	\end{center}
-	\caption{{\label{fig:hgsvc}
-        \textbf{Performance on a graph of structural variants from the HGSVC.}
-        Abbreviations used here and in subsequent figures and tables: vg = \textsc{vg}, hg = \textsc{HashGraph}, og = \textsc{odgi}, pg = \textsc{PackedGraph}, xg = \textsc{xg}.
-        All four new graph implementations compare favorably to \textsc{vg}.
-        \textsc{PackedGraph} tends to be the most memory efficient, \textsc{HashGraph} tends to be the fastest, and \textsc{odgi} is balanced in between.
-        \textsc{xg} provides good performance on both memory usage and speed, but it is static.
-        }
-      }
-\end{figure}
-
-\begin{figure} %[t]{1.0\textwidth}
-  \centering
-  \includegraphics[width=1.0\textwidth]{figures/graph_summary.pdf}
-  \caption{
-    \label{fig:graphprops}
-    \textbf{Graphs in the collection.}
-    An overview of the 2299 graphs in the collection used for experiments.
-    Most graphs contain edges, with the exception of one large graph built from a set of linear sequences (top left), which has no edges.
-    In general, graphs in the collection have a path set, but the path coverage is low in the case of graphs built from a linear reference, and zero in the case of graphs built through assembly methods (e.g. compacted de Bruijn graphs).
-    A subset of graphs have high path coverage (seen in orange and yellow).
-    These represent regions around a collection of structural variants, where short read alignments from HG002 have been used to augment the graph, wherein they are embedded as paths.
-    }
-\end{figure}
-  
-\begin{figure}
-  \centering
-  \includegraphics[width=1.0\textwidth]{figures/build_and_load_memory.png}
-  \caption{
-    \label{fig:prof1}
-    \textbf{Memory requirements for model construction and loading.}
-    Memory costs versus graph sequence size for the graph collection, colored by \textsc{HandleGraph} model.
-    The memory requirements for graph construction tend to be higher than those for loading the graph model.
-    All methods show fixed overheads of several megabytes, seen in the flat tail to the left of both plots.
-    Outside of this region, all methods show roughly linear scaling in both build and load costs per input base pair.
-    The relative differences in memory costs appear to be stable between different methods across many orders of magnitude in graph size.
-    Notably, \textsc{vg} has approximately the same build and load costs, as the data structures used are the same.
-    The other methods tend to use auxilary data structures at build time, and so require more memory to build the data structure than to load it.
-    }
-\end{figure}
-
-\begin{figure}
-  \centering
-  \includegraphics[width=1.0\textwidth]{figures/iteration_per_second.png}
-  \caption{
-    \label{fig:prof2}
-    \textbf{Graph element enumeration performance.}
-    Iteration performance for edges, handles, and path steps for the full graph collection, shown in terms of elements per second.
-    \textsc{HashGraph} provides the highest performance for all element iteration types on smaller graphs, but this performance falls of with larger graphs, presumably due to scaling properties of the backing hash tables.
-    The same pattern can be seen for \textsc{vg}, although the overall performance is worse.
-    Although it has the worst edge iteration performance, \textsc{PackedGraph} provides good performance on handle and path step iteration.
-    The relative path encoding in \textsc{odgi} yields poor performance on path iteration, and node decoding overheads appear to reduce its handle iteration performance, but it has good graph topology traversal performance, perhaps due to cache coherency of the edge encoding.
-    \textsc{xg} provides excellent iteration performance in all cases.
-    }
-\end{figure}
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=1.0\textwidth]{figures/1000gp_chroms_node_count.pdf}
+  \includegraphics[width=0.5\textwidth]{figures/1000gp_chroms_node_count.pdf}
   \caption{
     \label{fig:1000GPchroms}
     \textbf{Load memory versus node count for chromosome graphs built from 1000 Genomes Project variants and GRCh37.}
@@ -404,10 +365,14 @@ Should these pangenome representations become common or standard, then variation
     }
 \end{figure}
 
+We first evaluated the scaling performance of the various \textsc{HandleGraph} implementations relative to node count for each of the nuclear chromosomes in the 1000GP (Figure \ref{fig:1000GPchroms}).
+We find that for all methods, load memory scales almost perfectly with node count, with an average $R^2 = 0.998$.
+Due to differences in variant density among the chromosomes, the average correlation relative to sequence length is lower ($R^2 = 0.986$).
+
 \begin{table}
   \centering
-\begin{tabular}{l||c|c|r|r|r}
-model & build bytes/bp & load bytes/bp & handles/s & edges/s & steps/s \\
+\begin{tabular}{c||c|c|r|r|r}
+Model & Build B/bp & Load B/bp & Node/s & Edges/s & Steps/s \\
 \hline
 vg &   80.2 &   77.2  &   24610804 &    2818795 &     2862661 \\
 hg &   36.7 &   23.9  &   59523906 &   18944603 &   127232984 \\
@@ -426,4 +391,94 @@ xg &   54.3 &   9.31  &   54223417 &   20487877 &   116951120 \\
 \label{table:1000GPchroms}
 \end{table}
 
+In Table \ref{table:1000GPchroms}, we report the average memory performance of the methods relative to graph sequence length, and also the iteration performance in terms of elements per second.
+We find that the best-performing method in terms of memory usage is \textsc{PackedGraph}, which consumes around $1/20$th the memory of \textsc{vg} per base-pair of graph in the 1000GP set.
+However, it provides significantly better iteration performance for nodes (handles), edges, and path steps.
+\textsc{HashGraph} and \textsc{xg} have similar iteration performance, but \textsc{xg}, by virtue of its use of compressed, static data structures, requires less than half as much memory.
+\textsc{odgi} optimized for efficient dynamic operations on graphs with higher path coverage, and in general is not as performant as other methods on this set.
+
+
+\section{Discussion}
+
+We have presented a set of simple formalisms, the \textsc{HandleGraph} abstraction, which provides a coherent interface to address and manipulate the components of a genome variation graph.
+To explore the utility of this model, we implemented data structures to encode variation graphs and matched them to this interface.
+This allowed us to directly compare these \textsc{HandleGraph} implementations on a diverse set of genome graphs obtained during our research.
+These experiments reveal that genome graphs need not pay the computational expense of the early versions of \textsc{vg}.
+The best-performing models require an order of magnitude less memory than \textsc{vg} while providing higher performance for basic graph access operation and element iteration.
+For these reasons, \textsc{vg} has transitioned to using these newer graph implementations. 
+
+The efficiency of these methods and their encapsulation within a coherent programming interface will support their reuse within a diverse set of application domains.
+Variation graphs have deep similarity with graphs used in assembly; these libraries could be used as the basis for assembly methods.
+They could also be used for genotyping and haplotype inference methods based on graphs \citep{garg2018graph}.
+
+Ongoing work is establishing large numbers of highly-contiguous whole genome assemblies for humans (\url{https://humanpangenome.org/}).
+Improvements in sequencing technology are likely to make such surveys routine.
+It is natural to consider a pangenome reference system, based on the whole genome alignments of such assemblies, as the output of these pangenome projects.
+Recent results demonstrate that many basic bioinformatic problems can be generalized to operate on such structures.
+Should these pangenome representations become common or standard, then variation graph data structures like those we have presented here will form the basis for a wide range of pangenomic methods.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%     please remove the " % " symbol from \centerline{\includegraphics{fig01.eps}}
+%     as it may ignore the figures.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%\section*{Acknowledgements}
+%
+%TODO
+
+\section*{Funding}
+
+TODO
+
+\bibliographystyle{natbib}
+%\bibliographystyle{achemnat}
+%\bibliographystyle{plainnat}
+%\bibliographystyle{abbrv}
+%\bibliographystyle{bioinformatics}
+%
+%\bibliographystyle{plain}
+%
+\bibliography{document}
+
+
+% \begin{thebibliography}{}
+
+% \bibitem[Bofelli {\it et~al}., 2000]{Boffelli03}
+% Bofelli,F., Name2, Name3 (2003) Article title, {\it Journal Name}, {\bf 199}, 133-154.
+
+% \bibitem[Bag {\it et~al}., 2001]{Bag01}
+% Bag,M., Name2, Name3 (2001) Article title, {\it Journal Name}, {\bf 99}, 33-54.
+
+% \bibitem[Yoo \textit{et~al}., 2003]{Yoo03}
+% Yoo,M.S. \textit{et~al}. (2003) Oxidative stress regulated genes
+% in nigral dopaminergic neurnol cell: correlation with the known
+% pathology in Parkinson's disease. \textit{Brain Res. Mol. Brain
+% Res.}, \textbf{110}(Suppl. 1), 76--84.
+
+% \bibitem[Lehmann, 1986]{Leh86}
+% Lehmann,E.L. (1986) Chapter title. \textit{Book Title}. Vol.~1, 2nd edn. Springer-Verlag, New York.
+
+% \bibitem[Crenshaw and Jones, 2003]{Cre03}
+% Crenshaw, B.,III, and Jones, W.B.,Jr (2003) The future of clinical
+% cancer management: one tumor, one chip. \textit{Bioinformatics},
+% doi:10.1093/bioinformatics/btn000.
+
+% \bibitem[Auhtor \textit{et~al}. (2000)]{Aut00}
+% Auhtor,A.B. \textit{et~al}. (2000) Chapter title. In Smith, A.C.
+% (ed.), \textit{Book Title}, 2nd edn. Publisher, Location, Vol. 1, pp.
+% ???--???.
+
+% \bibitem[Bardet, 1920]{Bar20}
+% Bardet, G. (1920) Sur un syndrome d'obesite infantile avec
+% polydactylie et retinite pigmentaire (contribution a l'etude des
+% formes cliniques de l'obesite hypophysaire). PhD Thesis, name of
+% institution, Paris, France.
+
+% \end{thebibliography}
 \end{document}

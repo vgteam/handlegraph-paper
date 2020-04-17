@@ -4,7 +4,7 @@ main.pdf: main.tex main.bbl figures/*
 	pdflatex main.tex </dev/null
 	pdflatex main.tex </dev/null
 
-main.bbl: references.bib
+main.bbl: document.bib
 	pdflatex main </dev/null
 	bibtex main </dev/null
 
