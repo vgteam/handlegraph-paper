@@ -19,7 +19,7 @@
 \author[Eizenga, \textit{et~al}.]{
 Jordan M. Eizenga\,$^{\text{\sfb 1, \sfb 2} \dagger}$, 
 Adam M. Novak\,$^{\text{\sfb 1, \sfb 2} \dagger}$, 
-Emily Kobayashi\,$^{\text{\sfb 1, \sfb 2, \sfb 3}}$,
+Emily Kobayashi\,$^{\text{\sfb 1, \sfb 3}}$,
 Flavia Villani\,$^{\text{\sfb 4, \sfb 5}}$,
 Cecilia Cisar\,$^{\text{\sfb 1, \sfb 2}}$,
 Simon Heumos\,$^{\text{\sfb 6}}$,
@@ -125,7 +125,7 @@ The interface uses ``handles'' (opaque references modeled after the concept of a
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=0.5\textwidth]{figures/GRaphchrXpaper.pdf}
+		\includegraphics[width=0.5\textwidth]{figures/GRaphchrXpaper.png}
 	\end{center}
 	\caption{{\label{fig:graph}
         \textbf{Entities in the bidirected sequence graph.}
@@ -312,7 +312,7 @@ The results generally match our expectations based on the implementations' desig
     Outside of this region, all methods show roughly linear scaling in both build and load costs per input base pair.
     The relative differences in memory costs appear to be stable between different methods across many orders of magnitude in graph size.
     Notably, \textsc{vg} has approximately the same build and load costs, as the data structures used are the same.
-    The other methods tend to use auxilary data structures at build time, and so require more memory to build the data structure than to load it.
+    The other methods tend to use auxiliary data structures at build time, and so require more memory to build the data structure than to load it.
     }
 \end{figure}
 
@@ -355,7 +355,7 @@ Thus, the performance of data structures on these graphs is of general interest.
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=0.5\textwidth]{figures/1000gp_chroms_node_count.pdf}
+  \includegraphics[width=0.5\textwidth]{figures/1000gp_chroms_node_count.png}
   \caption{
     \label{fig:1000GPchroms}
     \textbf{Load memory versus node count for chromosome graphs built from 1000 Genomes Project variants and GRCh37.}
@@ -435,8 +435,8 @@ Should these pangenome representations become common or standard, then variation
 
 \section*{Funding}
 
-This work was supported, in part, by the National Institutes of Health (award numbers 2U41HG007234, 5U54HG007990, 5T32HG008345-04, U01HL137183 to B.P.) and the W. M. Keck Foundation (DT06172015 to B.P.).
-S.H. acknowledges funding from the central innovation programme (ZIM) for SMEs of the Federal Ministry for Economic Affairs and Energy of Germany.
+This work was supported, in part, by the National Institutes of Health (award numbers 2U41HG007234, 5U54HG007990, 5T32HG008345-04, U01HL137183 to B.P.) and the W. M. Keck Foundation (award number DT06172015 to B.P.).
+S.H. acknowledges funding from the Central Innovation Programme (ZIM) for SMEs of the Federal Ministry for Economic Affairs and Energy of Germany.
 
 \bibliographystyle{natbib}
 %\bibliographystyle{achemnat}
