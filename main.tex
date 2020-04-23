@@ -56,7 +56,7 @@ Using a diverse collection of pangenome graphs, we demonstrate that these tools 
 For instance, the speed and memory usage is up to an order of magnitude better than the prior graph implementation in the \textsc{vg} toolkit, which has now transitioned to using \texttt{libbdsg}'s implementations.\\
 \textbf{Availability:} \texttt{libhandlegraph} and \texttt{libbdsg} are available under an MIT License from \url{https://github.com/vgteam/libhandlegraph} and \url{https://github.com/vgteam/libbdsg}. \\
 \textbf{Contact:} \href{erik.garrison@ucsc.edu}{erik.garrison@ucsc.edu} \\
-\textbf{Supplementary information:} Supplementary data are available at \textit{Bioinformatics} online.
+%\textbf{Supplementary information:} Supplementary data are available at \textit{Bioinformatics} online.
 }
 
 \maketitle
@@ -394,7 +394,7 @@ xg &   54.3 &   9.31  &   54223417 &   20487877 &   116951120 \\
 
 In Table \ref{table:1000GPchroms}, we report the average memory performance of the methods relative to graph sequence length, and also the iteration performance in terms of elements per second.
 We find that the best-performing method in terms of memory usage is \textsc{PackedGraph}, which consumes around $1/20$th the memory of \textsc{vg} per base-pair of graph in the 1000GP set.
-However, it provides significantly better iteration performance for nodes (handles), edges, and path steps.
+However, it provides significantly better iteration performance for nodes, edges, and path steps.
 \textsc{HashGraph} and \textsc{xg} have similar iteration performance, but \textsc{xg}, by virtue of its use of compressed, static data structures, requires less than half as much memory.
 \textsc{odgi} optimized for efficient dynamic operations on graphs with higher path coverage, and in general is not as performant as other methods on this set.
 
