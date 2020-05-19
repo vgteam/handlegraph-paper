@@ -116,12 +116,12 @@ In bidirected sequence graphs, a node's sides correspond to the 5' and 3' ends o
 Paths through a bidirected graph must leave a node out of the side opposite the side through which they enter it.
 We interpret paths that traverse a node from the 3' side to the 5' as using the node's reverse complement strand, which provides a natural means to encode DNA strandedness.
 Some paths correspond to sequences of interest, such as reference genomes or annotations of the reference.
-Because paths like these are so frequently important in practice, our formalism also includes paths as a first class object, embedded in the graph.
+Because paths like these are so frequently important in practice, our graph formalism also includes a set of paths, along with node and edge sets.
 
 \subsection{The \textsc{HandleGraph} interface}
 
 The \texttt{libhandlegraph} library describes a generic interface that exposes basic operations on our sequence graph data model.
-The interface uses ``handles'' (opaque references modeled after the concept of a file handle) in order to remain agnostic about the backing implementation of the graph.
+The interface uses ``handles'' (modeled after the concept of a file handle) in order to remain agnostic about the backing implementation of the graph.
 
 \begin{figure}
 	\begin{center}
@@ -157,6 +157,8 @@ The \textsc{HandleGraph} model focuses on five fundamental entities in bidirecte
 
 The defining feature of the model is that none of these entities are accessed directly.
 Instead, only \emph{handles}, or references, to strands, edges, paths, and steps are available.
+A handle in \texttt{libhandlegraph} is an instance of a value type with no methods and no specified meaning for its contents, which is used to refer to or naming something. We say that handles are ``opaque'': user code cannot (usefully or safely) look inside them or interpret or manipulate their contents.
+
 The \texttt{libhandlegraph} interface requires sequence graph implementations to be able to provide or consume these handles for all queries.
 %The handles are then passed back to the API to refer to these entities when performing operations and making queries.
 For instance, we might obtain a handle to a strand from an implementation by querying a node's ID and providing an orientation, while another function provided in the implementation would map the handle back to a given node ID.
@@ -218,7 +220,7 @@ Rank and select operations on succinct bit vectors also provide queries by base-
 \subsubsection{\textsc{HashGraph}}
 
 \textsc{HashGraph} has speed as its primary goal.
-It represents the graph as a collection of node objects in a high performance hash table, while embedded paths are implemented as doubly-linked lists.
+It represents the graph nodes as a collection of node objects in a high performance hash table, while paths are implemented as doubly-linked lists.
 Edges are recorded in vectors attached to each node that they connect.
 This adjacency list encoding is appropriate for genome graphs, which are typically very sparse.
 Each node object maintains a vector of pointers to the path steps that traverse it.
