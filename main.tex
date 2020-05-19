@@ -83,7 +83,7 @@ This suggests that significant memory savings should be possible.
 
 Early versions variation graph toolkit (\textsc{vg}) \citep{Garrison_2018} have provided a cautionary tale of such a na\"ive implementation.
 \textsc{vg} used full-width machine words as identifiers for graph elements, stored the elements and graph topology in a set of hash tables, and linked identifiers to elements with raw pointers.
-Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit used to consume more than 300 GB of memory, which is $\sim$30 times as large as the serialized representation \citep{Garrison_2019}.
+Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit used to consume more than 300~GB of memory, which is $\sim$30 times as large as the serialized representation \citep{Garrison_2019}.
 
 Although \textsc{vg} provided a memory-efficient succinct representation of the graph (\textsc{xg}) that could be used during read mapping and variant calling, the succinct representation did not allow for dynamic updates to the graph.
 As a result, graph-modifying steps in \textsc{vg} pangenomic analysis pipelines had to break large graphs into smaller pieces, often connected components that correspond to chromosomes.
@@ -94,13 +94,15 @@ To overcome this limitation, we have developed three new graph genome data struc
 Here, we compare the performance of these data structures to those originally in \textsc{vg} as well as \textsc{xg} using a diverse collection of genome graphs obtained during our work in graphical pangenomics.
 
 In addition to demonstrating the possibility of working with large, complex graphs in small amounts of memory, these implementations expose a common API based on the \textsc{HandleGraph} model described below.
-This model provides a consistent, reliable interface to genome graphs based on their fundamental elements.
+This model provides an interface to genome graphs, based on their fundamental elements, which is intended to be implementable atop a broad diversity of graph storage designs.
 The \textsc{vg} toolkit has been refactored to use this API as its default means of serializing and manipulating graphs since version 1.22.0. 
 
 %To support reuse by other researchers,
 We package these implementations behind equivalent C++ and Python APIs in \texttt{libbdsg}.
 This software library will reduce the need for individual research groups to continually reimplement these core data structures.
-These dynamic \textsc{HandleGraph} libraries will ease the development of algorithms that work on large, complex pangenome graphs by making it easy to store them in reasonable amounts of working memory and manipulate them in reasonable amounts of time.
+These dynamic \textsc{HandleGraph} libraries will ease the development of algorithms that manipulate large, complex pangenome graphs.
+The reduction in memory requirements (from over 300~GB to under 100~GB in some cases; see Figure~\ref{fig:hgsvc} in ``Evaluation'') makes it possible to move workloads that would otherwise need specialized ``memory optimized'' machines, such as Amazon's 488~GB, 64-thread \texttt{r4.16xlarge}, onto cheaper and more readily available machines with in many cases more processing power, like Amazon's 144~GB, 72-thread \texttt{c5.18xlarge}.
+Combined with improvements in access speed over the previous \textsc{vg} dynamic graph implementation, significant cost and time savings can be realized.
 
 
 \begin{methods}
@@ -120,7 +122,7 @@ Because paths like these are so frequently important in practice, our graph form
 
 \subsection{The \textsc{HandleGraph} interface}
 
-The \texttt{libhandlegraph} library describes a generic interface that exposes basic operations on our sequence graph data model.
+The \texttt{libhandlegraph} library describes an interface that exposes basic operations on our sequence graph data model.
 The interface uses ``handles'' (modeled after the concept of a file handle) in order to remain agnostic about the backing implementation of the graph.
 
 \begin{figure}
@@ -157,7 +159,8 @@ The \textsc{HandleGraph} model focuses on five fundamental entities in bidirecte
 
 The defining feature of the model is that none of these entities are accessed directly.
 Instead, only \emph{handles}, or references, to strands, edges, paths, and steps are available.
-A handle in \texttt{libhandlegraph} is an instance of a value type with no methods and no specified meaning for its contents, which is used to refer to or naming something. We say that handles are ``opaque'': user code cannot (usefully or safely) look inside them or interpret or manipulate their contents.
+A handle in \texttt{libhandlegraph} is an instance of a value type with no methods and no specified meaning for its contents, which is used to refer to or naming something.
+We say that handles are ``opaque'': user code cannot (usefully or safely) look inside them or interpret or manipulate their contents.
 
 The \texttt{libhandlegraph} interface requires sequence graph implementations to be able to provide or consume these handles for all queries.
 %The handles are then passed back to the API to refer to these entities when performing operations and making queries.
@@ -211,7 +214,7 @@ It additionally provides positional indexes over paths that are required for rea
 Unlike other \textsc{HandleGraph} implementations, \textsc{xg} is a static graph index.
 This permits a more powerful set of efficient queries against the graph, especially for paths.
 The encoding is designed to balance speed and low memory usage.
-The topology of the graph is encoded in a single vector of bit-compressed integers, which promotes cache-efficiency.
+The topology of the graph is encoded in a single vector of bit-compressed integers, which promotes cache efficiency.
 Rank and select operations on succinct bit vectors are used to provide random access over the variable-length records, which each encode a node's sequence, ID, and edges.
 Embedded paths are encoded in variable-length integer vectors with Elias gamma encoding.
 Rank and select operations on succinct bit vectors also provide queries by base-pair position along paths.
@@ -220,7 +223,7 @@ Rank and select operations on succinct bit vectors also provide queries by base-
 \subsubsection{\textsc{HashGraph}}
 
 \textsc{HashGraph} has speed as its primary goal.
-It represents the graph nodes as a collection of node objects in a high performance hash table, while paths are implemented as doubly-linked lists.
+It represents the graph nodes as a collection of node objects in a \texttt{sparsepp} hash table (selected due to our familiarity with the project and its ability to outperform the standard library \citep{brehm2019hash}), while paths are implemented as doubly-linked lists.
 Edges are recorded in vectors attached to each node that they connect.
 This adjacency list encoding is appropriate for genome graphs, which are typically very sparse.
 Each node object maintains a vector of pointers to the path steps that traverse it.
@@ -230,7 +233,7 @@ Most of \textsc{HashGraph}'s component data structures are uncompressed STL obje
 
 \subsubsection{\textsc{odgi}}
 
-\textsc{odgi} (Optimized Dynamic Graph Implementation) is based on a node-centric encoding of the graph that is designed to improve cache coherency when traversing or modifying the graph.
+\textsc{odgi} (Optimized Dynamic Graph Implementation) is based on a node-centric encoding of the graph that is designed to improve cache efficiency when traversing or modifying the graph.
 This encoding is split between graph topology and paths, which is important for achieving a good balance of runtime performance and memory usage on real-world graphs with large path sets.
 Each node's sequence and edges are encoded in a byte array using a variable-length integer encoding scheme.
 Edges are described in terms of a relative offset between the rank of this node in the sorted array of nodes of the graph and the node to which the edge arrives.
@@ -328,7 +331,7 @@ The results generally match our expectations based on the implementations' desig
     \textsc{HashGraph} provides the highest performance for all element iteration types on smaller graphs, but this performance falls of with larger graphs, presumably due to scaling properties of the backing hash tables.
     The same pattern can be seen for \textsc{vg}, although the overall performance is worse.
     Although it has the worst edge iteration performance, \textsc{PackedGraph} provides good performance on node and path step iteration.
-    The relative path encoding in \textsc{odgi} yields poor performance on path iteration, and node decoding overheads appear to reduce its node iteration performance, but it has good graph topology traversal performance, perhaps due to cache coherency of the edge encoding.
+    The relative path encoding in \textsc{odgi} yields poor performance on path iteration, and node decoding overheads appear to reduce its node iteration performance, but it has good graph topology traversal performance, perhaps due to cache efficiency of the edge encoding.
     \textsc{xg} provides excellent iteration performance in all cases.
     }
 \end{figure}
