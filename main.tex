@@ -157,7 +157,7 @@ The \textsc{HandleGraph} model focuses on five fundamental entities in bidirecte
 
 The defining feature of the model is that none of these entities are accessed directly.
 Instead, only \emph{handles}, or references, to strands, edges, paths, and steps are available.
-A handle in \texttt{libhandlegraph} is an instance of a value type with no methods and no specified meaning for its contents, which is used to refer to or naming something. We say that handles are "opaque": user code cannot (usefully or safely) look inside them or interpret or manipulate their contents.
+A handle in \texttt{libhandlegraph} is an instance of a value type with no methods and no specified meaning for its contents, which is used to refer to or naming something. We say that handles are ``opaque'': user code cannot (usefully or safely) look inside them or interpret or manipulate their contents.
 
 The \texttt{libhandlegraph} interface requires sequence graph implementations to be able to provide or consume these handles for all queries.
 %The handles are then passed back to the API to refer to these entities when performing operations and making queries.
