@@ -121,7 +121,7 @@ Because paths like these are so frequently important in practice, our graph form
 \subsection{The \textsc{HandleGraph} interface}
 
 The \texttt{libhandlegraph} library describes a generic interface that exposes basic operations on our sequence graph data model.
-The interface uses ``handles'' (opaque references modeled after the concept of a file handle) in order to remain agnostic about the backing implementation of the graph.
+The interface uses ``handles'' (modeled after the concept of a file handle) in order to remain agnostic about the backing implementation of the graph.
 
 \begin{figure}
 	\begin{center}
@@ -157,6 +157,8 @@ The \textsc{HandleGraph} model focuses on five fundamental entities in bidirecte
 
 The defining feature of the model is that none of these entities are accessed directly.
 Instead, only \emph{handles}, or references, to strands, edges, paths, and steps are available.
+A handle in \texttt{libhandlegraph} is an instance of a value type with no methods and no specified meaning for its contents, which is used to refer to or naming something. We say that handles are "opaque": user code cannot (usefully or safely) look inside them or interpret or manipulate their contents.
+
 The \texttt{libhandlegraph} interface requires sequence graph implementations to be able to provide or consume these handles for all queries.
 %The handles are then passed back to the API to refer to these entities when performing operations and making queries.
 For instance, we might obtain a handle to a strand from an implementation by querying a node's ID and providing an orientation, while another function provided in the implementation would map the handle back to a given node ID.
