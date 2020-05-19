@@ -100,8 +100,9 @@ The \textsc{vg} toolkit has been refactored to use this API as its default means
 %To support reuse by other researchers,
 We package these implementations behind equivalent C++ and Python APIs in \texttt{libbdsg}.
 This software library will reduce the need for individual research groups to continually reimplement these core data structures.
-These dynamic \textsc{HandleGraph} libraries will ease the development of algorithms that work on large, complex pangenome graphs.
-The reduction in memory requirements (from over 300~GB to under 100~GB in some cases; see Figure~\ref{fig:hgsvc} in "Evaluation") makes it possible to move workloads that would otherwise need specialized "memory-optimized" machines, such as Amazon's 488~GB, 64-thread \texttt{r4.16xlarge}, onto cheaper and more readily available machines with more processing power, like Amazon's 144~GB, 72-thread \texttt{c5.18xlarge}. Combined with improvements in access speed over the previous \textsc{vg} dynamic graph implementation, significant cost and time savings can be realized.
+These dynamic \textsc{HandleGraph} libraries will ease the development of algorithms that manipulate large, complex pangenome graphs.
+The reduction in memory requirements (from over 300~GB to under 100~GB in some cases; see Figure~\ref{fig:hgsvc} in ``Evaluation'') makes it possible to move workloads that would otherwise need specialized ``memory optimized'' machines, such as Amazon's 488~GB, 64-thread \texttt{r4.16xlarge}, onto cheaper and more readily available machines with in many cases more processing power, like Amazon's 144~GB, 72-thread \texttt{c5.18xlarge}.
+Combined with improvements in access speed over the previous \textsc{vg} dynamic graph implementation, significant cost and time savings can be realized.
 
 
 \begin{methods}
