@@ -94,7 +94,7 @@ To overcome this limitation, we have developed three new graph genome data struc
 Here, we compare the performance of these data structures to those originally in \textsc{vg} as well as \textsc{xg} using a diverse collection of genome graphs obtained during our work in graphical pangenomics.
 
 In addition to demonstrating the possibility of working with large, complex graphs in small amounts of memory, these implementations expose a common API based on the \textsc{HandleGraph} model described below.
-This model provides a consistent, reliable interface to genome graphs based on their fundamental elements.
+This model provides an interface to genome graphs, based on their fundamental elements, which is intended to be implementable atop a broad diversity of graph storage designs.
 The \textsc{vg} toolkit has been refactored to use this API as its default means of serializing and manipulating graphs since version 1.22.0. 
 
 %To support reuse by other researchers,
@@ -120,7 +120,7 @@ Because paths like these are so frequently important in practice, our graph form
 
 \subsection{The \textsc{HandleGraph} interface}
 
-The \texttt{libhandlegraph} library describes a generic interface that exposes basic operations on our sequence graph data model.
+The \texttt{libhandlegraph} library describes an interface that exposes basic operations on our sequence graph data model.
 The interface uses ``handles'' (modeled after the concept of a file handle) in order to remain agnostic about the backing implementation of the graph.
 
 \begin{figure}
@@ -211,7 +211,7 @@ It additionally provides positional indexes over paths that are required for rea
 Unlike other \textsc{HandleGraph} implementations, \textsc{xg} is a static graph index.
 This permits a more powerful set of efficient queries against the graph, especially for paths.
 The encoding is designed to balance speed and low memory usage.
-The topology of the graph is encoded in a single vector of bit-compressed integers, which promotes cache-efficiency.
+The topology of the graph is encoded in a single vector of bit-compressed integers, which promotes cache efficiency.
 Rank and select operations on succinct bit vectors are used to provide random access over the variable-length records, which each encode a node's sequence, ID, and edges.
 Embedded paths are encoded in variable-length integer vectors with Elias gamma encoding.
 Rank and select operations on succinct bit vectors also provide queries by base-pair position along paths.
@@ -230,7 +230,7 @@ Most of \textsc{HashGraph}'s component data structures are uncompressed STL obje
 
 \subsubsection{\textsc{odgi}}
 
-\textsc{odgi} (Optimized Dynamic Graph Implementation) is based on a node-centric encoding of the graph that is designed to improve cache coherency when traversing or modifying the graph.
+\textsc{odgi} (Optimized Dynamic Graph Implementation) is based on a node-centric encoding of the graph that is designed to improve cache efficiency when traversing or modifying the graph.
 This encoding is split between graph topology and paths, which is important for achieving a good balance of runtime performance and memory usage on real-world graphs with large path sets.
 Each node's sequence and edges are encoded in a byte array using a variable-length integer encoding scheme.
 Edges are described in terms of a relative offset between the rank of this node in the sorted array of nodes of the graph and the node to which the edge arrives.
@@ -328,7 +328,7 @@ The results generally match our expectations based on the implementations' desig
     \textsc{HashGraph} provides the highest performance for all element iteration types on smaller graphs, but this performance falls of with larger graphs, presumably due to scaling properties of the backing hash tables.
     The same pattern can be seen for \textsc{vg}, although the overall performance is worse.
     Although it has the worst edge iteration performance, \textsc{PackedGraph} provides good performance on node and path step iteration.
-    The relative path encoding in \textsc{odgi} yields poor performance on path iteration, and node decoding overheads appear to reduce its node iteration performance, but it has good graph topology traversal performance, perhaps due to cache coherency of the edge encoding.
+    The relative path encoding in \textsc{odgi} yields poor performance on path iteration, and node decoding overheads appear to reduce its node iteration performance, but it has good graph topology traversal performance, perhaps due to cache efficiency of the edge encoding.
     \textsc{xg} provides excellent iteration performance in all cases.
     }
 \end{figure}
