@@ -83,7 +83,7 @@ This suggests that significant memory savings should be possible.
 
 Early versions variation graph toolkit (\textsc{vg}) \citep{Garrison_2018} have provided a cautionary tale of such a na\"ive implementation.
 \textsc{vg} used full-width machine words as identifiers for graph elements, stored the elements and graph topology in a set of hash tables, and linked identifiers to elements with raw pointers.
-Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit used to consume more than 300 GB of memory, which is $\sim$30 times as large as the serialized representation \citep{Garrison_2019}.
+Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit used to consume more than 300~GB of memory, which is $\sim$30 times as large as the serialized representation \citep{Garrison_2019}.
 
 Although \textsc{vg} provided a memory-efficient succinct representation of the graph (\textsc{xg}) that could be used during read mapping and variant calling, the succinct representation did not allow for dynamic updates to the graph.
 As a result, graph-modifying steps in \textsc{vg} pangenomic analysis pipelines had to break large graphs into smaller pieces, often connected components that correspond to chromosomes.
@@ -100,7 +100,8 @@ The \textsc{vg} toolkit has been refactored to use this API as its default means
 %To support reuse by other researchers,
 We package these implementations behind equivalent C++ and Python APIs in \texttt{libbdsg}.
 This software library will reduce the need for individual research groups to continually reimplement these core data structures.
-These dynamic \textsc{HandleGraph} libraries will ease the development of algorithms that work on large, complex pangenome graphs by making it easy to store them in reasonable amounts of working memory and manipulate them in reasonable amounts of time.
+These dynamic \textsc{HandleGraph} libraries will ease the development of algorithms that work on large, complex pangenome graphs.
+The reduction in memory requirements (from over 300~GB to under 100~GB in some cases; see Figure~\ref{fig:hgsvc} in "Evaluation") makes it possible to move workloads that would otherwise need specialized "memory-optimized" machines, such as Amazon's 488~GB, 64-thread \texttt{r4.16xlarge}, onto cheaper and more readily available machines with more processing power, like Amazon's 144~GB, 72-thread \texttt{c5.18xlarge}. Combined with improvements in access speed over the previous \textsc{vg} dynamic graph implementation, significant cost and time savings can be realized.
 
 
 \begin{methods}
