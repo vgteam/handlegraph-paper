@@ -15,7 +15,7 @@
 
 \subtitle{Genome Analysis}
 
-\title[short Title]{Succinct dynamic variation graphs}
+\title[short Title]{Efficient dynamic variation graphs}
 \author[Eizenga, \textit{et~al}.]{
 Jordan M. Eizenga\,$^{\text{\sfb 1, \sfb 2} \dagger}$, 
 Adam M. Novak\,$^{\text{\sfb 1, \sfb 2} \dagger}$, 
@@ -85,12 +85,12 @@ Early versions variation graph toolkit (\textsc{vg}) \citep{Garrison_2018} have 
 \textsc{vg} used full-width machine words as identifiers for graph elements, stored the elements and graph topology in a set of hash tables, and linked identifiers to elements with raw pointers.
 Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit used to consume more than 300~GB of memory, which is $\sim$30 times as large as the serialized representation \citep{Garrison_2019}.
 
-Although \textsc{vg} provided a memory-efficient succinct representation of the graph (\textsc{xg}) that could be used during read mapping and variant calling, the succinct representation did not allow for dynamic updates to the graph.
+Although \textsc{vg} provided a memory-efficient representation of the graph (\textsc{xg}) that could be used during read mapping and variant calling, this representation did not allow for dynamic updates to the graph.
 As a result, graph-modifying steps in \textsc{vg} pangenomic analysis pipelines had to break large graphs into smaller pieces, often connected components that correspond to chromosomes.
 Unfortunately, this strategy is not tenable for all graphs.
 For instance, many whole genome alignment and assembly graphs consist of a single giant component that cannot be partitioned easily.
 
-To overcome this limitation, we have developed three new graph genome data structures that are both dynamic, in that they allow efficient updates and edits, \emph{and} succinct, in that they require memory on the order of the graph's information content.
+To overcome this limitation, we have developed three new graph genome data structures that are both dynamic, in that they allow efficient updates and edits, \emph{and} memory-efficient for real world genome graphs.
 Here, we compare the performance of these data structures to those originally in \textsc{vg} as well as \textsc{xg} using a diverse collection of genome graphs obtained during our work in graphical pangenomics.
 
 In addition to demonstrating the possibility of working with large, complex graphs in small amounts of memory, these implementations expose a common API based on the \textsc{HandleGraph} model described below.
@@ -300,6 +300,7 @@ Extensive documentation of these libraries and their respective graph implementa
 
 We measured the core operation performance of the four graph implementations and the graph class from the popular \textsc{vg} software (as implemented prior to version 1.22.0).
 In particular, we measured 1) memory usage to construct a graph, 2) time to construct a graph, 3) memory usage to load an already-constructed graph, and 4) time to access nodes, edges, and steps of a path.
+Accesses were performed with a single thread, and the reported access time is the average time taken when accessing each graph element sequentially.
 The presented results are from a graph describing the structural variants of the Human Genome Structural Variation Consortium \citep{chaisson2019multi}.
 The results generally match our expectations based on the implementations' design goals (Figure \ref{fig:hgsvc}).
 
@@ -378,13 +379,13 @@ Due to differences in variant density among the chromosomes, the average correla
 \begin{table}
   \centering
 \begin{tabular}{c||c|c|r|r|r}
-Model & Build B/bp & Load B/bp & Node/s & Edges/s & Steps/s \\
+Model & Build B/bp & Load B/bp & $10^6$ Node/s & $10^6$ Edges/s & $10^6$ Steps/s \\
 \hline
-vg &   80.2 &   77.2  &   24610804 &    2818795 &     2862661 \\
-hg &   36.7 &   23.9  &   59523906 &   18944603 &   127232984 \\
-og &   30.3 &   13.7  &   24143220 &   11518919 &     8186908 \\
-pg &   37.6 &   3.80  &   63652595 &    4554284 &    24298536 \\
-xg &   54.3 &   9.31  &   54223417 &   20487877 &   116951120 \\
+vg &   80.2 &                77.2  &              24.6 &                  2.8 &               2.9 \\
+hg &   36.7 &                23.9  &              59.5 &                 18.9 &              \textbf{127.2} \\
+og &   \textbf{30.3}  &   13.7  &              24.1 &                 11.5 &              8.2 \\
+pg &   37.6 &                 \textbf{3.80}  &   \textbf{63.7} &   4.6 &                24.3 \\
+xg &   54.3 &                9.31  &               54.2 &                 \textbf{20.5} & 117.0 \\
 \hline
 \end{tabular}
 \caption{
