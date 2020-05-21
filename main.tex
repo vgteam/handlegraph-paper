@@ -301,6 +301,7 @@ Extensive documentation of these libraries and their respective graph implementa
 We measured the core operation performance of the four graph implementations and the graph class from the popular \textsc{vg} software (as implemented prior to version 1.22.0).
 In particular, we measured 1) memory usage to construct a graph, 2) time to construct a graph, 3) memory usage to load an already-constructed graph, and 4) time to access nodes, edges, and steps of a path.
 Accesses were performed with a single thread, and the reported access time is the average time taken when accessing each graph element sequentially.
+All evaluations were performed on an 3.1 GHz Intel Xeon Platinum 8000 series processor.
 The presented results are from a graph describing the structural variants of the Human Genome Structural Variation Consortium \citep{chaisson2019multi}.
 The results generally match our expectations based on the implementations' design goals (Figure \ref{fig:hgsvc}).
 
