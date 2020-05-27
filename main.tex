@@ -63,32 +63,25 @@ For instance, the speed and memory usage is up to an order of magnitude better t
 
 \section{Introduction}
 
-With falling sequencing costs, the genomics community has sequenced increasingly many individuals within certain species.
-For example, hundreds of thousands of deeply-sequenced human genomes are now available.
-The novel challenges of analyzing data sets of this scale have led to the development of \vocab{computational pangenomics}, which focuses on analyzing populations of genomes rather than individuals \citep{computational2016computational}.
-
+As increasingly many individuals have been sequenced from certain species, the field of \vocab{computational pangenomics} has emerged to analyze whole populations of genomes rather than individual genomes \citep{computational2016computational}.
 Much of the research in computational pangenomics has coalesced around graph-based approaches for representing populations of genomes \citep{Paten_2017}.
-Unlike conventional string-based representations, graph data structures provide a coherent modeling language to represent different types of genomic variation like substitutions, insertions, deletions, and more complex genomic events.
-They also compactly represent many-way relationships between related genomes, such as whole genome alignments \citep{kehr2014genome}.
+Unlike conventional string-based representations, graph data structures can represent genomic variation like substitutions, insertions, deletions, and other more complex genomic events.
 
-Graph-based data structures also present new computational challenges.
+Graph-based data structures present new computational challenges.
 In addition to sequence, genome graphs must represent topology.
-Given the size of many genomes of interest, this can be quite demanding on computer memory.
-Furthermore, there is significant impetus to make the graph data structures computationally efficient, since they are frequently the core data structure in pangenomics applications.
-
-Genome graphs that include small variants and describe a large population of eukaryotic genomes can contain hundreds of millions of nodes and edges.
-Using na\"ive data structures to identify and provide random access to elements of these graphs has very high memory costs.
-However, the total information content is only incrementally more than in the total sequence set of the pangenome.
+Given the size of many genomes, this can be quite demanding on computer memory.
+However, the total information content in a genome graph is only incrementally more than the sequences of the pangenome.
 This suggests that significant memory savings should be possible.
+There is also significant impetus to make the graph data structures computationally efficient, since they are frequently the core data structure in pangenomics applications.
 
-Early versions variation graph toolkit (\textsc{vg}) \citep{Garrison_2018} have provided a cautionary tale of such a na\"ive implementation.
-\textsc{vg} used full-width machine words as identifiers for graph elements, stored the elements and graph topology in a set of hash tables, and linked identifiers to elements with raw pointers.
+Early versions variation graph toolkit (\textsc{vg}) \citep{Garrison_2018} have provided a cautionary tale of a na\"ive implementation.
+\textsc{vg} used full-width machine words as identifiers for graph elements and stored the elements and graph topology in a set of hash tables.
 Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit used to consume more than 300~GB of memory, which is $\sim$30 times as large as the serialized representation \citep{Garrison_2019}.
 
 Although \textsc{vg} provided a memory-efficient representation of the graph (\textsc{xg}) that could be used during read mapping and variant calling, this representation did not allow for dynamic updates to the graph.
-As a result, graph-modifying steps in \textsc{vg} pangenomic analysis pipelines had to break large graphs into smaller pieces, often connected components that correspond to chromosomes.
-Unfortunately, this strategy is not tenable for all graphs.
-For instance, many whole genome alignment and assembly graphs consist of a single giant component that cannot be partitioned easily.
+Graph-modifying steps of \textsc{vg} pipelines, such as the original construction of the graph, required a dynamic implementation.
+Some pipelines could be made feasible by breaking large graphs into connected components.
+However, this strategy reduces efficiency, and it is untenable for pangenome graphs that consist of a single component.
 
 To overcome this limitation, we have developed three new graph genome data structures that are both dynamic, in that they allow efficient updates and edits, \emph{and} memory-efficient for real world genome graphs.
 Here, we compare the performance of these data structures to those originally in \textsc{vg} as well as \textsc{xg} using a diverse collection of genome graphs obtained during our work in graphical pangenomics.
@@ -99,8 +92,7 @@ The \textsc{vg} toolkit has been refactored to use this API as its default means
 
 %To support reuse by other researchers,
 We package these implementations behind equivalent C++ and Python APIs in \texttt{libbdsg}.
-This software library will reduce the need for individual research groups to continually reimplement these core data structures.
-These dynamic \textsc{HandleGraph} libraries will ease the development of algorithms that manipulate large, complex pangenome graphs.
+This software library will reduce the need for individual research groups to continually reimplement these core data structures and ease the development of algorithms that manipulate large, complex pangenome graphs.
 The reduction in memory requirements (from over 300~GB to under 100~GB in some cases; see Figure~\ref{fig:hgsvc} in ``Evaluation'') makes it possible to move workloads that would otherwise need specialized ``memory optimized'' machines, such as Amazon's 488~GB, 64-thread \texttt{r4.16xlarge}, onto cheaper and more readily available machines with in many cases more processing power, like Amazon's 144~GB, 72-thread \texttt{c5.18xlarge}.
 Combined with improvements in access speed over the previous \textsc{vg} dynamic graph implementation, significant cost and time savings can be realized.
 
@@ -120,12 +112,9 @@ This provides a natural means to encode DNA strandedness.
 Longer sequences can be formed by concatenating the sequences of multiple adjacent nodes together.
 These nodes form a path, which is defined as a list of oriented nodes (either forward or reverse), such that the graph contains an edge between the adjacent sides of each pair of subsequent oriented nodes\footnote{Unlike the usage in some graph theoretic contexts, we do not intend the term path to indicate that these nodes must be distinct.}.
 Some paths correspond to sequences of interest, such as reference genomes or annotations of the reference.
-Because paths like these are so frequently important in practice, our graph formalism also includes a set of paths, along with node and edge sets.
+Because paths like these are so frequently important in practice, our graph formalism also includes a set of paths along with the graph's node and edges.
 
 \subsection{The \textsc{HandleGraph} interface}
-
-The \texttt{libhandlegraph} library describes an interface that exposes basic operations on our sequence graph data model.
-The interface uses ``handles'' (modeled after the concept of a file handle) in order to remain agnostic about the backing implementation of the graph.
 
 \begin{figure}
 	\begin{center}
@@ -149,6 +138,7 @@ The interface uses ``handles'' (modeled after the concept of a file handle) in o
     }
 \end{figure}
 
+The \texttt{libhandlegraph} library describes an interface that exposes basic operations on our sequence graph data model.
 The \textsc{HandleGraph} model focuses on five fundamental entities in bidirected sequence graphs (Figure \ref{fig:graph}):
 
 \begin{itemize}
@@ -160,23 +150,22 @@ The \textsc{HandleGraph} model focuses on five fundamental entities in bidirecte
 \end{itemize}
 
 The defining feature of the model is that none of these entities are accessed directly.
-Instead, only \emph{handles}, or references, to strands, edges, paths, and steps are available.
-A handle in \texttt{libhandlegraph} is an instance of a value type with no methods and no specified meaning for its contents, which is used to refer to or naming something.
-We say that handles are ``opaque'': user code cannot (usefully or safely) look inside them or interpret or manipulate their contents.
+Instead, they are accessed via \emph{handles}, which are references modeled after the concept of file handles.
+The handles are a data type with no methods and no specified meaning for its contents.
+Thus, we say that handles are ``opaque'' in that user code cannot usefully look inside them or manipulate their contents.
+Rather, the \texttt{libhandlegraph} interface requires the sequence graph implementation to be able to provide or consume these handles for all queries.
 
-The \texttt{libhandlegraph} interface requires sequence graph implementations to be able to provide or consume these handles for all queries.
 %The handles are then passed back to the API to refer to these entities when performing operations and making queries.
-For instance, we might obtain a handle to a strand from an implementation by querying a node's ID and providing an orientation, while another function provided in the implementation would map the handle back to a given node ID.
-Alternatively, we can obtain a handle to a path from its name (e.g. ``chr22''), and then iterate over handles to the path's steps to follow its course through the graph.
-Or, starting from a given handle to a strand, we can follow its outgoing or incoming edges to explore the topology of the graph.
-
+For example, we could obtain a handle to a strand from a \textsc{HandleGraph} implementation by providing a node's ID.
+We could then provide this handle to another method to obtain handles to this strand's neighbors, and a further method would map the neighbors' handles to their node IDs.
+Alternatively, we could obtain a handle to a path from its name (e.g. ``chr22''), and then iterate over handles to the path's steps to follow its course through the graph.
 %The actual contents of a handle are unspecified, which gives significant flexibility to the implementation.
 %An implementation need not actually store the handle in its unpacked form.
 %Handles might be implicitly represented internally, in minimal space.
 
-The actual contents of a handle are unspecified, which gives significant flexibility to the implementation.
 One benefit of this design is that any algorithm designed for one \textsc{HandleGraph} implementation can be applied to all other implementations.
-Another is that, since the user works only through handles that they cannot forge or modify, their ability to make mistakes can be restricted.
+Since the actual contents of a handle are unspecified, this benefit is achieved while simultaneously maintaining flexibility in the implementation.
+Another benefit is that, since the user works only through handles that they cannot forge or modify, their ability to make mistakes can be restricted.
 For example, the interface can enforce the constraints on paths through bidirected graphs during edge traversal.
 Furthermore, the interface is able to be memory-safe by eliminating raw pointers and other direct access to graph elements.
 
@@ -236,7 +225,7 @@ Most of \textsc{HashGraph}'s component data structures are uncompressed STL obje
 \subsubsection{\textsc{odgi}}
 
 \textsc{odgi} (Optimized Dynamic Graph Implementation) is based on a node-centric encoding of the graph that is designed to improve cache efficiency when traversing or modifying the graph.
-This encoding is split between graph topology and paths, which is important for achieving a good balance of runtime performance and memory usage on real-world graphs with large path sets.
+This encoding is split between graph topology and paths, which is important for achieving a balance of runtime performance and memory usage on real-world graphs with large path sets.
 Each node's sequence and edges are encoded in a byte array using a variable-length integer encoding scheme.
 Edges are described in terms of a relative offset between the rank of this node in the sorted array of nodes of the graph and the node to which the edge arrives.
 The set of steps traversing the node is recorded in a second dynamic integer vector, compressed so that only the largest integer entry is stored at full bit-width \citep{prezza2017framework}.
