@@ -114,9 +114,11 @@ Combined with improvements in access speed over the previous \textsc{vg} dynamic
 Our libraries adopt node-labeled bidirected graphs as a formalism for sequence graphs.
 In a bidirected graph, nodes are considered to have left and right ``sides'', and edges connect two sides rather than two nodes.
 In bidirected sequence graphs, a node's sides correspond to the 5' and 3' ends of its DNA sequence. 
+Nodes can be traversed either from left to right, which is interpreted as the forward strand of the sequence, or from right to left, which is interpreted as the reverse complement.
+This provides a natural means to encode DNA strandedness.
 
-Paths through a bidirected graph must leave a node out of the side opposite the side through which they enter it.
-We interpret paths that traverse a node from the 3' side to the 5' as using the node's reverse complement strand, which provides a natural means to encode DNA strandedness.
+Longer sequences can be formed by concatenating the sequences of multiple adjacent nodes together.
+These nodes form a path, which is defined as a list of oriented nodes (either forward or reverse), such that the graph contains an edge between the adjacent sides of each pair of subsequent oriented nodes\footnote{Unlike the usage in some graph theoretic contexts, we do not intend the term path to indicate that these nodes must be distinct.}.
 Some paths correspond to sequences of interest, such as reference genomes or annotations of the reference.
 Because paths like these are so frequently important in practice, our graph formalism also includes a set of paths, along with node and edge sets.
 
@@ -153,7 +155,7 @@ The \textsc{HandleGraph} model focuses on five fundamental entities in bidirecte
 \item \emph{Nodes} identify pairs of complementary DNA strands and have unique numerical identifiers (IDs).
 \item \emph{Strands} identify one strand of a node's DNA sequence.
 \item \emph{Edges} link pairs of strands, in order.
-\item \emph{Paths} represent sequences as walks through the graph.
+\item \emph{Paths} represent sequences of interest as paths through the graph.
 \item \emph{Steps} describe paths' visits to nodes' strands.
 \end{itemize}
 
