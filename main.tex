@@ -79,7 +79,7 @@ Early versions variation graph toolkit (\textsc{vg}) \citep{Garrison_2018} have 
 Loading the 1000 Genomes Project's variant set into the \textsc{vg} toolkit used to consume more than 300~GB of memory, which is $\sim$30 times as large as the serialized representation \citep{Garrison_2019}.
 
 Although \textsc{vg} provided a memory-efficient representation of the graph (\textsc{xg}) that could be used during read mapping and variant calling, this representation did not allow for dynamic updates to the graph.
-Graph-modifying steps of \textsc{vg} pipelines, such as the original construction of the graph, required a dynamic implementation.
+The dynamic implementation remained necessary for graph-modifying steps of \textsc{vg} pipelines, such as the original construction of the graph and augmenting the graph with novel variants.
 Some pipelines could be made feasible by breaking large graphs into connected components.
 However, this strategy reduces efficiency, and it is untenable for pangenome graphs that consist of a single component.
 
@@ -91,11 +91,10 @@ This model provides an interface to genome graphs, based on their fundamental el
 The \textsc{vg} toolkit has been refactored to use this API as its default means of serializing and manipulating graphs since version 1.22.0. 
 
 %To support reuse by other researchers,
-We package these implementations behind equivalent C++ and Python APIs in \texttt{libbdsg}.
+We have packaged these implementations behind equivalent C++ and Python APIs in \texttt{libbdsg}.
 This software library will reduce the need for individual research groups to continually reimplement these core data structures and ease the development of algorithms that manipulate large, complex pangenome graphs.
-The reduction in memory requirements (from over 300~GB to under 100~GB in some cases; see Figure~\ref{fig:hgsvc} in ``Evaluation'') makes it possible to move workloads that would otherwise need specialized ``memory optimized'' machines, such as Amazon's 488~GB, 64-thread \texttt{r4.16xlarge}, onto cheaper and more readily available machines with in many cases more processing power, like Amazon's 144~GB, 72-thread \texttt{c5.18xlarge}.
+Moreover, the reduction in memory requirements makes it possible to move workloads that would otherwise need specialized high-memory machines onto cheaper ones that often also have more processing power (for example, from Amazon's r4 instances to c5 instances).
 Combined with improvements in access speed over the previous \textsc{vg} dynamic graph implementation, significant cost and time savings can be realized.
-
 
 \begin{methods}
 
@@ -110,11 +109,45 @@ Nodes can be traversed either from left to right, which is interpreted as the fo
 This provides a natural means to encode DNA strandedness.
 
 Longer sequences can be formed by concatenating the sequences of multiple adjacent nodes together.
-These nodes form a path, which is defined as a list of oriented nodes (either forward or reverse), such that the graph contains an edge between the adjacent sides of each pair of subsequent oriented nodes\footnote{Unlike the usage in some graph theoretic contexts, we do not intend the term path to indicate that these nodes must be distinct.}.
+These nodes form a path, which is defined as a list of oriented nodes (either forward or reverse), such that the graph contains an edge between the adjacent sides of each pair of subsequent oriented nodes in the list\footnote{Unlike the usage in many graph theoretic contexts, we do not intend the term path to indicate that these nodes must be distinct.}.
 Some paths correspond to sequences of interest, such as reference genomes or annotations of the reference.
 Because paths like these are so frequently important in practice, our graph formalism also includes a set of paths along with the graph's node and edges.
 
 \subsection{The \textsc{HandleGraph} interface}
+
+The \texttt{libhandlegraph} library describes an interface that exposes basic operations on our sequence graph data model.
+The \textsc{HandleGraph} model focuses on five fundamental entities in bidirected sequence graphs (Figure \ref{fig:graph}):
+
+\begin{itemize}
+\item \emph{Nodes} identify pairs of complementary DNA strands and have unique numerical identifiers (IDs).
+\item \emph{Strands} identify one strand of a node's DNA sequence.
+\item \emph{Edges} link pairs of strands, in order.
+\item \emph{Paths} represent sequences of interest as paths through the graph.
+\item \emph{Steps} describe paths' visits to nodes' strands.
+\end{itemize}
+
+The defining feature of the model is that none of these entities are accessed directly.
+Instead, they are accessed via \emph{handles}, which are references modeled after the concept of file handles.
+The handles are implemented as a data type with no methods and no prespecified meaning for its contents.
+Thus, we say that handles are ``opaque'' in that user code cannot usefully look inside them or manipulate their contents.
+Rather, the \texttt{libhandlegraph} interface requires the sequence graph implementation to be able to provide or consume these handles for all queries.
+
+%The handles are then passed back to the API to refer to these entities when performing operations and making queries.
+For example, we could obtain a handle to a strand from a \textsc{HandleGraph} implementation by providing the node's ID.
+We could then provide this handle to another of the graph's methods to obtain handles to this strand's neighbors, and a further method would map the neighbors' handles to their node IDs.
+Alternatively, we could obtain a handle to a path from its name (e.g. ``chr22''), and then iterate over handles to the path's steps to follow its course through the graph.
+%The actual contents of a handle are unspecified, which gives significant flexibility to the implementation.
+%An implementation need not actually store the handle in its unpacked form.
+%Handles might be implicitly represented internally, in minimal space.
+
+One benefit of this design is that any algorithm designed for one \textsc{HandleGraph} implementation can be applied to all other implementations.
+Since the actual contents of a handle are unspecified, this benefit is achieved while simultaneously maintaining flexibility in the implementation.
+Another benefit is that, since the user works only through handles that they cannot forge or modify, their ability to make mistakes can be restricted.
+For example, the interface can enforce the constraints on paths through bidirected graphs during edge traversal.
+Furthermore, the interface can be made memory-safe by eliminating raw pointers and other direct access to graph elements.
+
+%This prevents common mistakes that the developers identified in their work on the VG project.
+%Taken together, these benefits enable code that focuses on the algorithms rather than on boilerplate bookkeeping.
 
 \begin{figure}
 	\begin{center}
@@ -138,41 +171,6 @@ Because paths like these are so frequently important in practice, our graph form
     }
 \end{figure}
 
-The \texttt{libhandlegraph} library describes an interface that exposes basic operations on our sequence graph data model.
-The \textsc{HandleGraph} model focuses on five fundamental entities in bidirected sequence graphs (Figure \ref{fig:graph}):
-
-\begin{itemize}
-\item \emph{Nodes} identify pairs of complementary DNA strands and have unique numerical identifiers (IDs).
-\item \emph{Strands} identify one strand of a node's DNA sequence.
-\item \emph{Edges} link pairs of strands, in order.
-\item \emph{Paths} represent sequences of interest as paths through the graph.
-\item \emph{Steps} describe paths' visits to nodes' strands.
-\end{itemize}
-
-The defining feature of the model is that none of these entities are accessed directly.
-Instead, they are accessed via \emph{handles}, which are references modeled after the concept of file handles.
-The handles are a data type with no methods and no specified meaning for its contents.
-Thus, we say that handles are ``opaque'' in that user code cannot usefully look inside them or manipulate their contents.
-Rather, the \texttt{libhandlegraph} interface requires the sequence graph implementation to be able to provide or consume these handles for all queries.
-
-%The handles are then passed back to the API to refer to these entities when performing operations and making queries.
-For example, we could obtain a handle to a strand from a \textsc{HandleGraph} implementation by providing a node's ID.
-We could then provide this handle to another method to obtain handles to this strand's neighbors, and a further method would map the neighbors' handles to their node IDs.
-Alternatively, we could obtain a handle to a path from its name (e.g. ``chr22''), and then iterate over handles to the path's steps to follow its course through the graph.
-%The actual contents of a handle are unspecified, which gives significant flexibility to the implementation.
-%An implementation need not actually store the handle in its unpacked form.
-%Handles might be implicitly represented internally, in minimal space.
-
-One benefit of this design is that any algorithm designed for one \textsc{HandleGraph} implementation can be applied to all other implementations.
-Since the actual contents of a handle are unspecified, this benefit is achieved while simultaneously maintaining flexibility in the implementation.
-Another benefit is that, since the user works only through handles that they cannot forge or modify, their ability to make mistakes can be restricted.
-For example, the interface can enforce the constraints on paths through bidirected graphs during edge traversal.
-Furthermore, the interface is able to be memory-safe by eliminating raw pointers and other direct access to graph elements.
-
-%This prevents common mistakes that the developers identified in their work on the VG project.
-%Taken together, these benefits enable code that focuses on the algorithms rather than on boilerplate bookkeeping.
-
-
 \subsection{Graph implementations}
 
 We consider five implementations of the \textsc{HandleGraph} model.
@@ -181,6 +179,7 @@ Two implementations, \textsc{vg} and \textsc{xg}, have been described previously
 The others are combined in the \texttt{libbdsg} library (\url{https://github.com/vgteam/libbdsg}), which provides three concrete implementations: \textsc{HashGraph}, \textsc{odgi}, and \textsc{PackedGraph}.
 Each implementation represents a different tradeoff in terms of speed, memory use, and capabilities.
 All of the implementations except \textsc{xg} are dynamic.
+They support efficient addition and deletion of nodes, edges, paths, and steps, as well as some specialized methods such as splitting a node into multiple shorter nodes.
 Since all of these implementations use the same interface, the \texttt{libhandlegraph} header files serve as the most effective developer documentation for their functionality.
 %Readers seeking a precise description of each implementation should refer to developer documentation and code referenced in this section.
 
@@ -291,9 +290,11 @@ Extensive documentation of these libraries and their respective graph implementa
 
 We measured the core operation performance of the four graph implementations and the graph class from the popular \textsc{vg} software (as implemented prior to version 1.22.0).
 In particular, we measured 1) memory usage to construct a graph, 2) time to construct a graph, 3) memory usage to load an already-constructed graph, and 4) time to access nodes, edges, and steps of a path.
+These access operations are one of the major drivers of run time in pangenomic applications, such as \textsc{vg}'s read mapping algorithm. 
 Accesses were performed with a single thread, and the reported access time is the average time taken when accessing each graph element sequentially.
 All evaluations were performed on an 3.1 GHz Intel Xeon Platinum 8000 series processor.
-The presented results are from a graph describing the structural variants of the Human Genome Structural Variation Consortium \citep{chaisson2019multi}.
+The presented results are from a graph describing the structural variants of the Human Genome Structural Variation Consortium \citep{chaisson2019multi}, which was recently used to genotype structural variants\citep{hickey2020genotyping}.
+Specifically, the graph consists of the GRCh38 primary scaffolds and 72,485 indel variants ranging in size from 50bp to 76kbp.
 The results generally match our expectations based on the implementations' design goals (Figure \ref{fig:hgsvc}).
 
 \subsection{Genome graph collection}
