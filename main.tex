@@ -212,13 +212,29 @@ Rank and select operations on succinct bit vectors also provide queries by base-
 
 \subsubsection{\textsc{HashGraph}}
 
-\textsc{HashGraph} has speed as its primary goal.
-It represents the graph nodes as a collection of node objects in a \texttt{sparsepp} hash table (selected due to our familiarity with the project and its ability to outperform the standard library \citep{brehm2019hash}), while paths are implemented as doubly-linked lists.
-Edges are recorded in vectors attached to each node that they connect.
-This adjacency list encoding is appropriate for genome graphs, which are typically very sparse.
-Each node object maintains a vector of pointers to the path steps that traverse it.
-Most of \textsc{HashGraph}'s component data structures are uncompressed STL objects which can be used efficiently in their native in-memory arrangement.
-\textsc{HashGraph} trades memory for time, and thus is most appropriate for small graphs (from small genomes or small regions of larger genomes) or for high-memory compute environments.
+\textsc{HashGraph} is a relatively simple encoding, which is largely similar to the original \textsc{vg} graph.
+As such, it can be seen as a streamlined point of comparison for the other new dynamic graph implementations.
+However, the simplicity of this encoding has the benefit of allowing fast queries.
+Thus, even though \textsc{HashGraph} still has relatively high memory requirements, it can still be useful in high memory compute environments or for small sequence graphs (or subgraphs of larger graphs).
+
+Like \textsc{vg}, \textsc{HashGraph} encodes the topology of the graph in a hash table indexed by node IDs.
+However, these hash tables have been consolidated to avoid storing the keys multiple times.
+The hash table it uses is a drop-in replacement for the equivalent standard library (STL) data structure that has been shown to outperform it in empirical evaluations \citep{brehm2019hash}.
+Each hash table entry contains the sequence, an adjacency list of the edges in a STL vectors, and a vector indicating the path steps that the node can be found on.
+The graph's paths are represented using doubly-linked lists to support efficient modification at any position.
+
+In contrast to the more memory-efficient implementations, all of these data structures support computation in their native in-memory representation.
+Thus, the run time to access graph elements does not also include decompressing the data.
+This is how \textsc{HashGraph} maintains its comparative speed advantage.
+
+%\textsc{HashGraph} has speed and simplicity as its primary goal.
+%The data structures used in HashGraph are largely similar to the original \textsc{vg} graph.
+%It represents the graph nodes as a collection of node objects in a \texttt{sparsepp} hash table (selected due to our familiarity with the project and its ability to outperform the standard library \citep{brehm2019hash}), while paths are implemented as doubly-linked lists.
+%Edges are recorded in vectors attached to each node that they connect.
+%This adjacency list encoding is appropriate for genome graphs, which are typically very sparse.
+%Each node object maintains a vector of pointers to the path steps that traverse it.
+%Most of \textsc{HashGraph}'s component data structures are uncompressed STL objects which can be used efficiently in their native in-memory arrangement.
+%\textsc{HashGraph} trades memory for time, and thus is most appropriate for small graphs (from small genomes or small regions of larger genomes) or for high-memory compute environments.
 %Its implementation can be found at \url{https://github.com/vgteam/libbdsg/blob/master/include/hash_graph.hpp}.
 
 \subsubsection{\textsc{odgi}}
@@ -238,7 +254,7 @@ If each path step tends to move only a short distance in the sorted nodes of the
 \textsc{PackedGraph} is designed to have a very low memory footprint.
 The backing data structures are implemented using bit-compressed integer vectors.
 The bit-width of these vectors is chosen dynamically, starting with a bit-width of 1 and  then expanding the wideth and reallocating the vector whenever an edit operation introduces an integer that is too large to be represented with the current width.
-In the typical case that the value of $i$-th entry in the vector is $O(i)$, the reallocations have an  $O(1)$ amortized run time per edit.
+In the typical case that the value of $i$-th entry in the vector is $O(i)$, these reallocations have an  $O(1)$ amortized run time per edit.
 
 Many of the integer vectors tend to also have entries that are highly correlated with their neighbors.
 \textsc{PackedGraph} exploits this characteristic to achieves greater compression by only storing one entry per fixed-size window at full bit-width.
@@ -249,6 +265,7 @@ The graph topology is represented using an adjacency list, which is efficient fo
 Since the implementation must provide efficient edits both to these adjacencies and to stored paths, both of them are represented using linked lists.
 This allows $O(1)$ modifications even at internal positions in the list.
 The linked list is expressed using the same bit-compressed integer vector, where pointers are created by treating some integer entries as indexes into the vector itself.
+This encoding also guarantees the technical condition that the $i$-th entry in the vector is $O(i)$.
 %Most of its component data structures are---conceptually speaking---linked lists.
 %However, they are implemented using vectors of bit-compressed integers, where pointers are produced by treating some of the integer entries as indexes into the vector that contains them.
 %The bit-width can be determined dynamically.
