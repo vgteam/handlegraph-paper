@@ -215,12 +215,12 @@ Rank and select operations on succinct bit vectors also provide queries by base-
 \textsc{HashGraph} is a relatively simple encoding, which is largely similar to the original \textsc{vg} graph.
 As such, it can be seen as a streamlined point of comparison for the other new dynamic graph implementations.
 However, the simplicity of this encoding has the benefit of allowing fast queries.
-Thus, even though \textsc{HashGraph} still has relatively high memory requirements, it can still be useful in high memory compute environments or for small sequence graphs (or subgraphs of larger graphs).
+Thus, even though \textsc{HashGraph} still has relatively high memory requirements, it can still be useful in high memory compute environments or for small sequence graphs (such as subgraphs of genome graphs).
 
 Like \textsc{vg}, \textsc{HashGraph} encodes the topology of the graph in a hash table indexed by node IDs.
 However, these hash tables have been consolidated to avoid storing the keys multiple times.
 The hash table it uses is a drop-in replacement for the equivalent standard library (STL) data structure that has been shown to outperform it in empirical evaluations \citep{brehm2019hash}.
-Each hash table entry contains the sequence, an adjacency list of the edges in a STL vectors, and a vector indicating the path steps that the node can be found on.
+Each hash table entry contains the sequence, an adjacency list of the edges in two STL vectors, and a vector indicating the path steps that the node can be found on.
 The graph's paths are represented using doubly-linked lists to support efficient modification at any position.
 
 In contrast to the more memory-efficient implementations, all of these data structures support computation in their native in-memory representation.
@@ -253,7 +253,7 @@ If each path step tends to move only a short distance in the sorted nodes of the
 
 \textsc{PackedGraph} is designed to have a very low memory footprint.
 The backing data structures are implemented using bit-compressed integer vectors.
-The bit-width of these vectors is chosen dynamically, starting with a bit-width of 1 and  then expanding the wideth and reallocating the vector whenever an edit operation introduces an integer that is too large to be represented with the current width.
+The bit-width of these vectors is chosen dynamically, starting with a bit-width of 1 and  then reallocating the vector at a higher width whenever an edit operation introduces an integer that is too large to be represented with the current width.
 In the typical case that the value of $i$-th entry in the vector is $O(i)$, these reallocations have an  $O(1)$ amortized run time per edit.
 
 Many of the integer vectors tend to also have entries that are highly correlated with their neighbors.
@@ -261,11 +261,16 @@ Many of the integer vectors tend to also have entries that are highly correlated
  The rest of the entries are stored in a separate integer vector and expressed as a difference from that entry.
  Since the differences within a window tend to be small, this encoding keeps the bit-width for each window small as well.
 
-The graph topology is represented using an adjacency list, which is efficient for sparse graphs.
-Since the implementation must provide efficient edits both to these adjacencies and to stored paths, both of them are represented using linked lists.
-This allows $O(1)$ modifications even at internal positions in the list.
-The linked list is expressed using the same bit-compressed integer vector, where pointers are created by treating some integer entries as indexes into the vector itself.
-This encoding also guarantees the technical condition that the $i$-th entry in the vector is $O(i)$.
+The data associated with each node is recorded in several compressed integer vectors (at the same index in each).
+This contrasts to \textsc{xg}, which encodes data in a single vector to improve cache efficiency.
+Recording only one homogenous data type in a vector increases the correlation between neighboring values, which in turn improves compression.
+The adjacency list for the graph, the steps that each node is found on, and the paths themselves are represented using linked lists.
+The linked lists are expressed using the same bit-compressed integer vectors, where pointers are created by treating some integer entries as indexes into the vector itself.
+This pointer encoding also guarantees the technical condition that the $i$-th entry is $O(i)$.
+The linked lists that occur on every node (the adjacency lists and node step lists) are included in a single vector across all nodes.
+This serves two purposes.
+First, the windowed compression scheme in the integer vectors is inefficient if lists are smaller than the window size, as is often the case.
+Second, neighboring nodes often connect to the same nodes and are found on the same paths as each other, so the values they store are also highly correlated.
 %Most of its component data structures are---conceptually speaking---linked lists.
 %However, they are implemented using vectors of bit-compressed integers, where pointers are produced by treating some of the integer entries as indexes into the vector that contains them.
 %The bit-width can be determined dynamically.
