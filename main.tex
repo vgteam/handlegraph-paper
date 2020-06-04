@@ -295,7 +295,8 @@ This documentation also serves as useful introduction to the \textsc{HandleGraph
 
 Both \texttt{libhandlegraph} and \texttt{libbdsg} are open source under an MIT License.
 They are available on GitHub at \url{https://github.com/vgteam/libhandlegraph} and \url{https://github.com/vgteam/libbdsg}.
-Extensive documentation of these libraries and their respective graph implementations is available at \url{https://pangenome.github.io/}.
+Documentation for the two libraries, including the C++ handle graph API, \textsc{HashGraph}, \textsc{odgi}, and \textsc{PackedGraph}, is available at \url{https://bdsg.readthedocs.io} alongside the documentation for the Python binding.
+Additional documentation, focusing on \textsc{odgi} and its associated command-line tool, is available at \url{https://pangenome.github.io}.
 
 \end{methods}
 
@@ -329,7 +330,7 @@ These access operations are one of the major drivers of run time in pangenomic a
 Accesses were performed with a single thread, and the reported access time is the average time taken when accessing each graph element sequentially.
 All evaluations were performed on an 3.1 GHz Intel Xeon Platinum 8000 series processor.
 The presented results are from a graph describing the structural variants of the Human Genome Structural Variation Consortium \citep{chaisson2019multi}, which was recently used to genotype structural variants\citep{hickey2020genotyping}.
-Specifically, the graph consists of the GRCh38 primary scaffolds and 72,485 indel variants ranging in size from 50bp to 76kbp.
+Specifically, the graph consists of the GRCh38 primary scaffolds and 72,485 indel variants ranging in size from 50~bp to 76~kbp.
 The results generally match our expectations based on the implementations' design goals (Figure \ref{fig:hgsvc}).
 
 \subsection{Genome graph collection}
@@ -372,7 +373,7 @@ We summarize these results in Figures \ref{fig:prof1} and \ref{fig:prof2}.
 For graph construction and loading, we observe similar trends as for the HGSVC graph.
 \textsc{vg}'s performance in terms of memory usage is very poor, both during construction and load.
 For construction and load, all models exhibit largely linear scaling characteristics, outside of very small graphs where static memory overheads dominate.
-\textsc{PackedGraph} yields the best memory performance for larger graphs (which are mostly the chromosomes of the 1000 Genomes Project graph), while for the medium-sized graphs in the collection ($\sim$1 Mbp), \textsc{odgi} requires less memory.
+\textsc{PackedGraph} yields the best memory performance for larger graphs (which are mostly the chromosomes of the 1000 Genomes Project graph), while for the medium-sized graphs in the collection ($\sim$1~Mbp), \textsc{odgi} requires less memory.
 
 For graph queries and iteration, the relative performance of the models is largely maintained across the entire range of graph sizes.
 However, we observe that the hash-based models (\textsc{vg} and \textsc{HashGraph}) have very good performance for smaller graphs (in handle and edge enumeration) but decrease in throughput as the graph size increases.
