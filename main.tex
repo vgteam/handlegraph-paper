@@ -392,8 +392,6 @@ The results generally match our expectations based on the implementations' desig
     All methods show fixed overheads of several megabytes, seen in the flat tail to the left of both plots.
     Outside of this region, all methods show roughly linear scaling in both build and load costs per input base pair.
     The relative differences in memory costs appear to be stable between different methods across many orders of magnitude in graph size.
-    Notably, \textsc{VG} has approximately the same build and load costs, as the data structures used are the same.
-    The other methods tend to use auxiliary data structures at build time, and so require more memory to build the data structure than to load it.
     }
 \end{figure}
 
