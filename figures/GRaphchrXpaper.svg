@@ -19,9 +19,9 @@
    viewBox="0 0 652.1051 373.117"
    sodipodi:docname="GRaphchrXpaper.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   inkscape:export-filename="/home/enza/ezcngit/handlegraph-paper/figures/GRaphchrXpaper.svg.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
+   inkscape:export-filename="/z/home/anovak/workspace/handlegraph-paper/figures/GRaphchrXpaper.png"
+   inkscape:export-xdpi="300.00903"
+   inkscape:export-ydpi="300.00903"
    shape-rendering="crispEdges"><metadata
      id="metadata3738"><rdf:RDF><cc:Work
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
@@ -620,12 +620,12 @@
      id="namedview3734"
      showgrid="false"
      inkscape:zoom="1.8782052"
-     inkscape:cx="289.67612"
-     inkscape:cy="212.89163"
+     inkscape:cx="225.74301"
+     inkscape:cy="127.70392"
      inkscape:window-x="67"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g3740"
+     inkscape:current-layer="g12170"
      showguides="false"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -654,6 +654,8 @@
      x="31.706738"
      y="70.630371">1+:GAT</tspan></text>
 
+
+
 <path
    d="m 121.84812,40.194658 h 41.064 v 26.778164 h -41.064 z"
    style="fill:none;stroke:#ff1e54;stroke-width:1.50000004;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:7;stroke-dasharray:6.00000015,6.00000015;stroke-dashoffset:0;stroke-opacity:0.91372549"
@@ -668,6 +670,8 @@
      x="127.7372"
      y="57.283302">2+:A</tspan></text>
 
+
+
 <text
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:'Nimbus Roman No9 L';-inkscape-font-specification:'Nimbus Roman No9 L, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
    id="text3772"
@@ -678,6 +682,8 @@
      x="129.33618"
      y="101.2833">3+:G</tspan></text>
 
+
+
 <text
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:'Nimbus Roman No9 L';-inkscape-font-specification:'Nimbus Roman No9 L, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
    id="text3780"
@@ -687,6 +693,8 @@
      id="tspan5013"
      x="214.27145"
      y="71.101837">4+:ACA</tspan></text>
+
+
 
 <path
    inkscape:connector-curvature="0"
@@ -701,6 +709,8 @@
      id="tspan5009"
      x="32.373848"
      y="104.27031">1-:ATC</tspan></text>
+
+
 
 <flowRoot
    xml:space="preserve"
@@ -755,6 +765,8 @@
      x="129.53584"
      y="131.2321">3-:C</tspan></text>
 
+
+
 <text
    style="font-variant:normal;font-size:14.00024414px;font-family:'Nimbus Roman No9 L';-inkscape-font-specification:NimbusRomNo9L-Regu;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
    id="text3943"
@@ -764,6 +776,8 @@
      y="143.61903"
      sodipodi:role="line"
      id="tspan3941" /></text>
+
+
 
 <path
    inkscape:connector-curvature="0"
@@ -778,6 +792,8 @@
      id="tspan5015"
      x="215.60059"
      y="102.01466">4-:TGT</tspan></text>
+
+
 
 <path
    inkscape:connector-curvature="0"
@@ -815,6 +831,8 @@
      y="239.76962"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ffac41;fill-opacity:1;stroke:none;stroke-width:0.75;stroke-opacity:1">Node</tspan></text>
 
+
+
 <text
    id="text4844"
    y="255.2713"
@@ -826,6 +844,8 @@
      x="23.918087"
      id="tspan4842"
      sodipodi:role="line">Strand (forward)</tspan></text>
+
+
 
 <path
    inkscape:connector-curvature="0"
@@ -850,6 +870,8 @@
      x="23.119453"
      y="270.88565"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ff1e54;fill-opacity:0.91372549;stroke:none;stroke-width:0.75;stroke-opacity:0.91372549">Strand (reverse)</tspan></text>
+
+
 
 <path
    inkscape:connector-curvature="0"
@@ -878,6 +900,8 @@
      x="321.04916"
      y="70.436264">5+:GATT</tspan></text>
 
+
+
 <path
    d="m 421.3715,83.472205 h 41.064 v 26.778155 h -41.064 z"
    style="display:inline;fill:none;stroke:#ff1e54;stroke-width:1.50000004;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:7;stroke-dasharray:6.00000015,6.00000015;stroke-dashoffset:0;stroke-opacity:0.91372549"
@@ -892,6 +916,8 @@
      x="427.26123"
      sodipodi:role="line"
      id="tspan5003-8">6-:T</tspan></text>
+
+
 
 <path
    inkscape:connector-curvature="0"
@@ -908,6 +934,8 @@
      sodipodi:role="line"
      id="tspan5009-8">5-:AATC</tspan></text>
 
+
+
 <path
    inkscape:connector-curvature="0"
    id="path3945-5"
@@ -922,6 +950,8 @@
      x="427.46088"
      sodipodi:role="line"
      id="tspan5001-8">6+:A</tspan></text>
+
+
 
 <path
    inkscape:connector-curvature="0"
@@ -951,6 +981,8 @@
      y="251.88298"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ff1e54;fill-opacity:0.91372549;stroke:none;stroke-width:0.75;stroke-opacity:0.91372549">Edge (forward)</tspan></text>
 
+
+
 <text
    y="27.283302"
    x="127.7372"
@@ -960,6 +992,8 @@
      x="127.7372"
      id="tspan8347"
      sodipodi:role="line">2+:T</tspan></text>
+
+
 
 <g
    id="g27992"><text
@@ -972,6 +1006,8 @@
      x="21.735617"
      y="209.66144">1+:GAT</tspan></text>
 
+
+
 <text
    y="209.66144"
    x="122.69626"
@@ -982,6 +1018,8 @@
      x="122.69626"
      y="209.66144">3+:G</tspan></text>
 
+
+
 <text
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:'Nimbus Roman No9 L';-inkscape-font-specification:'Nimbus Roman No9 L, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#481380;fill-opacity:1;fill-rule:nonzero;stroke:none;"
    id="text5194"
@@ -991,6 +1029,8 @@
      id="tspan5192"
      x="210.23222"
      y="209.66144">4+:ACA</tspan></text>
+
+
 
 <text
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:'Nimbus Roman No9 L';-inkscape-font-specification:'Nimbus Roman No9 L, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#481380;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.99999994;"
@@ -1003,6 +1043,8 @@
      y="209.71744"
      style="fill:#481380;fill-opacity:1;stroke-width:0.99999994;">6+:A</tspan></text>
 
+
+
 <text
    y="209.74544"
    x="314.76407"
@@ -1013,6 +1055,8 @@
      x="314.76407"
      sodipodi:role="line"
      id="tspan5204">5-:AATC</tspan></text>
+
+
 
 <path
    inkscape:connector-curvature="0"
@@ -1045,6 +1089,8 @@
      id="tspan5152"
      sodipodi:role="line">1+:GAT</tspan></text>
 
+
+
 <text
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:'Nimbus Roman No9 L';-inkscape-font-specification:'Nimbus Roman No9 L, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#7470b3;fill-opacity:0.44705883;fill-rule:nonzero;stroke:none;"
    id="text5158"
@@ -1055,6 +1101,8 @@
      sodipodi:role="line"
      id="tspan5156">3+:G</tspan></text>
 
+
+
 <text
    y="163.20265"
    x="210.23221"
@@ -1064,6 +1112,8 @@
      x="210.23221"
      id="tspan5172"
      sodipodi:role="line">4+:ACA</tspan></text>
+
+
 
 <text
    y="163.20265"
@@ -1076,6 +1126,8 @@
      sodipodi:role="line"
      style="fill:#7470b3;fill-opacity:0.44705883;stroke-width:0.99999994;">5+:GATT</tspan></text>
 
+
+
 <text
    y="163.22366"
    x="427.20944"
@@ -1086,6 +1138,8 @@
      x="427.20944"
      sodipodi:role="line"
      id="tspan5180">6+:A</tspan></text>
+
+
 
 <path
    inkscape:connector-curvature="0"
@@ -1119,6 +1173,8 @@
      x="24.53084"
      y="180.28439">1+:GAT</tspan></text>
 
+
+
 <text
    y="178.29878"
    x="126.88737"
@@ -1129,6 +1185,8 @@
      x="126.88737"
      y="178.29878">2+:T</tspan></text>
 
+
+
 <text
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:'Nimbus Roman No9 L';-inkscape-font-specification:'Nimbus Roman No9 L, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#efb1ff;fill-opacity:1;fill-rule:nonzero;stroke:none"
    id="text5150"
@@ -1138,6 +1196,8 @@
      id="tspan5148"
      x="213.02744"
      y="178.27779">4+:ACA</tspan></text>
+
+
 
 <text
    style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:'Nimbus Roman No9 L';-inkscape-font-specification:'Nimbus Roman No9 L, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;display:inline;fill:#efb1ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.99999994"
@@ -1150,6 +1210,8 @@
      x="316.62082"
      y="178.27779">5+:GATT</tspan></text>
 
+
+
 <text
    y="178.29878"
    x="430.00467"
@@ -1160,6 +1222,8 @@
      x="430.00467"
      sodipodi:role="line"
      id="tspan5164">6+:A</tspan></text>
+
+
 
 <path
    inkscape:connector-curvature="0"
@@ -1193,6 +1257,8 @@
      id="tspan11808"
      sodipodi:role="line">Edge (reverse)</tspan></text>
 
+
+
 <g
    id="g12170"
    transform="translate(-2.8311835,-17.760542)"><text
@@ -1206,8 +1272,10 @@
      sodipodi:role="line"
      id="tspan12128">6-:T</tspan></text>
 
+
+
 <path
-   style="fill:none;stroke:#e6739f;stroke-width:2.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   style="fill:none;stroke:#e6739f;stroke-width:2.25000006;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6.75000017,6.75000017;stroke-opacity:1;stroke-dashoffset:0"
    d="m 54.157985,207.14713 h 52.500005 v 0"
    id="path12132"
    inkscape:connector-curvature="0" /><text
@@ -1221,6 +1289,8 @@
      sodipodi:role="line"
      id="tspan12134">5-:AATC</tspan></text>
 
+
+
 <text
    y="211.78113"
    x="225.71332"
@@ -1231,11 +1301,13 @@
      x="225.71332"
      y="211.78113">4-:TGT</tspan></text>
 
+
+
 <path
    inkscape:connector-curvature="0"
    id="path12142"
    d="m 168.72873,207.14713 h 52.5 v 0"
-   style="fill:none;stroke:#e6739f;stroke-width:2.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" /><text
+   style="fill:none;stroke:#e6739f;stroke-width:2.25000006;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6.75000017,6.75000017;stroke-opacity:1;stroke-dashoffset:0" /><text
    y="211.78113"
    x="329.45291"
    id="text12146"
@@ -1245,15 +1317,17 @@
      x="329.45291"
      y="211.78113">3-:C</tspan></text>
 
+
+
 <path
-   style="fill:none;stroke:#e6739f;stroke-width:2.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   style="fill:none;stroke:#e6739f;stroke-width:2.25000006;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6.75000017,6.75000017;stroke-opacity:1;stroke-dashoffset:0"
    d="m 272.90231,207.14713 h 52.5 v 0"
    id="path12148"
    inkscape:connector-curvature="0" /><path
    inkscape:connector-curvature="0"
    id="path12150"
    d="m 358.52609,207.14713 h 52.5 v 0"
-   style="fill:none;stroke:#e6739f;stroke-width:2.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" /><text
+   style="fill:none;stroke:#e6739f;stroke-width:2.25000006;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6.75000017,6.75000017;stroke-opacity:1;stroke-dashoffset:0" /><text
    y="211.78113"
    x="414.12466"
    id="text12154"
@@ -1262,6 +1336,8 @@
      id="tspan12152"
      x="414.12466"
      y="211.78113">1-:ATC</tspan></text>
+
+
 
 </g><path
    style="fill:none;stroke:#ff1e54;stroke-width:0.75000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.91372549;marker-end:url(#marker20943);stroke-miterlimit:4;stroke-dasharray:none"
@@ -1322,6 +1398,8 @@
      x="254.47113"
      id="tspan22817"
      sodipodi:role="line">Edge (reversing)</tspan></text>
+
+
 
 <path
    style="fill:none;stroke:#481380;stroke-width:0.75000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.95686275;marker-end:;stroke-miterlimit:4;stroke-dasharray:0.75000002, 3.00000007999999996;stroke-dashoffset:0"
