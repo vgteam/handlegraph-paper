@@ -44,6 +44,10 @@ ggplot(subset(bdsg.prof.df.iter, value>0), aes(x=graph.seq.length, y=value, colo
 ggsave("iteration_per_second.pdf", height=8, width=6.7)
 ggsave("iteration_per_second.png", height=8, width=6.7)
 
+ggplot(subset(bdsg.prof.df.iter, value>0), aes(x=cut(graph.seq.length, c(1e0,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10)), y=value, color=graph.model)) + geom_boxplot(size=0.5, alpha=I(1/5)) + scale_x_discrete("graph sequence length (bp)") + scale_y_log10("", breaks = c(1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11)) + scale_color_discrete("model") + facet_grid(name ~ ., scales = "free_y") + theme_bw() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave("iteration_per_second_boxplot.pdf", height=8, width=6.7)
+ggsave("iteration_per_second_boxplot.png", height=8, width=6.7)
+
 bdsg.prof.df.mem <- pivot_longer(bdsg.prof, cols=c(build.mem, load.mem))
 bdsg.prof.df.mem$name <- as.factor(bdsg.prof.df.mem$name)
 levels(bdsg.prof.df.mem$name) <- c("build memory (bytes)", "load memory (bytes)")
@@ -53,6 +57,9 @@ ggplot(subset(bdsg.prof.df.mem, value>0), aes(x=graph.seq.length, y=value*1000, 
 ggsave("build_and_load_memory.pdf", height=7, width=6.7)
 ggsave("build_and_load_memory.png", height=7, width=6.7)
 
+ggplot(subset(bdsg.prof.df.mem, value>0), aes(x=cut(graph.seq.length, c(1e0,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10)), y=value*1000, color=graph.model)) + geom_boxplot(size=0.5, alpha=I(1/5)) + scale_x_discrete("graph sequence length (bp)") + scale_y_log10("", breaks = c(1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11)) + scale_color_discrete("model") + facet_grid(name ~ ., scales = "free_y") + theme_bw() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave("build_and_load_memory_boxplot.pdf", height=7, width=6.7)
+ggsave("build_and_load_memory_boxplot.png", height=7, width=6.7)
 
 subset(bdsg.prof, startsWith(as.character(graph.name), "human__pan.AF0") & !grepl("MT", as.character(graph.name)) & !grepl("nopaths", as.character(graph.name)) & !grepl("mutilated", as.character(graph.name)) & !grepl("noP", as.character(graph.name))) %>% mutate(graph.subname=unlist(lapply(as.character(graph.name), function(x) strsplit(strsplit(x, "__")[[1]][3], ".gfa")[[1]]))) %>% ggplot(aes(y=load.mem*1000, x=graph.seq.length, color=graph.model)) + geom_point() + scale_y_log10("load memory (bytes)") + scale_x_log10("graph sequence length (bp)") + scale_color_discrete("model") + geom_text_repel(aes(label=graph.subname)) + theme_bw()
 ggsave("1000gp_chroms.pdf", height=4.2, width=7)

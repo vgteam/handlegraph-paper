@@ -176,7 +176,7 @@ Furthermore, implementations can be made memory-safe by eliminating raw pointers
 We consider five implementations of the \textsc{HandleGraph} model.
 To ground our experimental results, here we we provide a high-level overview of each implementation.
 Two implementations, \textsc{vg} and \textsc{xg}, have been described previously \citep{Garrison_2018,Garrison_2019}.
-The others are combined in the \texttt{libbdsg} library (\url{https://github.com/vgteam/libbdsg}), which provides three concrete implementations: \textsc{HashGraph}, \textsc{odgi}, and \textsc{PackedGraph}.
+The others are combined in the \texttt{libbdsg} library (\url{https://github.com/vgteam/libbdsg}), which provides three concrete implementations: \textsc{HashGraph}, \textsc{ODGI}, and \textsc{PackedGraph}.
 Each implementation represents a different tradeoff in terms of speed, memory use, and capabilities.
 All of the implementations except \textsc{xg} are dynamic.
 They support efficient addition and deletion of nodes, edges, paths, and steps, as well as some specialized methods such as splitting a node into multiple shorter nodes.
@@ -208,6 +208,7 @@ The topology of the graph is encoded in a single vector of bit-compressed intege
 Rank and select operations on succinct bit vectors are used to provide random access over the variable-length records, which each encode a node's sequence, ID, and edges.
 Embedded paths are encoded in variable-length integer vectors with Elias gamma encoding.
 Rank and select operations on succinct bit vectors also provide queries by base-pair position along paths.
+A detailed description of \textsc{xg} can be found in \citep{Garrison_2019}.
 %Its documentation can be found at \url{https://github.com/vgteam/xg/blob/master/README.md}.
 
 \subsubsection{\textsc{HashGraph}}
@@ -237,26 +238,35 @@ This is how \textsc{HashGraph} maintains its comparative speed advantage.
 %\textsc{HashGraph} trades memory for time, and thus is most appropriate for small graphs (from small genomes or small regions of larger genomes) or for high-memory compute environments.
 %Its implementation can be found at \url{https://github.com/vgteam/libbdsg/blob/master/include/hash_graph.hpp}.
 
-\subsubsection{\textsc{odgi}}
+\subsubsection{\textsc{ODGI}}
 
-\textsc{odgi} (Optimized Dynamic Graph Implementation) is based on a node-centric encoding of the graph that is designed to improve cache efficiency when traversing or modifying the graph.
+\textsc{ODGI} (Optimized Dynamic Graph Implementation) is based on a node-centric encoding that is designed to improve cache efficiency when traversing or modifying the graph.
 This encoding is split between graph topology and paths, which is important for achieving a balance of runtime performance and memory usage on graphs with large path sets.
-Each node $\mathcal{N} = ( \mathcal{B}, \mathcal{P} )$ is represented by a structure that contains a byte array $\mathcal{B} = (\mathcal{Q}, \mathcal{E})$ encoding its sequence and associated edges, and a compressed integer vector $\mathcal{P} = \mathcal{S}_1 \ldots \mathcal{S}_{s}$ describing the path steps that traverse it.
+It uses delta encoding of edges and path steps to reduce the cost of representing graphs with local partial order and sparsity, both of which are common features of pangenome graphs.
+\textsc{ODGI} is the default data model of the \textsc{odgi} toolkit (\url{https://github.com/vgteam/odgi}), which provides high-level algorithms for graph manipulation and interrogation that are designed to work at the scale of large pangenomes.
+
+In \textsc{ODGI}, each node $\mathcal{N} = ( \mathcal{B}, \mathcal{P} )$ is represented by a structure that contains a byte array $\mathcal{B} = (\mathcal{Q}, \mathcal{E})$ encoding its sequence and associated edges, and a compressed integer vector $\mathcal{P} = \mathcal{S}_1 \ldots \mathcal{S}_{s}$ describing the path steps that traverse it.
 The full graph model is simply an array of these node records $\mathcal{G} = \mathcal{N}_1 \ldots \mathcal{N}_{|\mathcal{G}|}$ with some additional data structures to allow for random access of paths by name, and to maintain important statistics about the size of the graph and its path set.
-\textsc{odgi} uses delta encoding of edges and path steps to reduce the cost of representing graphs with local partial order and sparsity, both of which are common features of pangenome graphs.
 
 Each node's sequence $\mathcal{Q}$ is stored using a full byte per character at the start of the byte array $\mathcal{B}$.
-This allows the application of the method to protein as well as DNA sequence graphs, and allows for copy-free reference to the node sequences which can improve the performance of algorithms which interact with the sequence space of the graph.
+This allows \textsc{ODGI} to represent protein as well as DNA sequence graphs, and allows for copy-free reference to the node sequences. % which can improve the performance of algorithms which interact with the sequence space of the graph.
 The edges that begin or end at the node are recorded in the remainder of $\mathcal{B}$, encoded as deltas between the rank of the other end of the edge and the current node. 
+% TODO make more clear that the objective is efficient path encoding
+%The set of $s$ steps traversing the node is recorded as an array of step records
 
-%The set of $s$ steps traversing the node is recorded as an array of step records $\mathcal{P} = \mathcal{S}_1 \ldots \mathcal{S}_{s}$.
-The path steps are recorded as a series of records in a dynamic integer vector which is compressed so that only the largest integer entry is stored at full bit-width \citep{prezza2017framework}.
-Each step $\mathcal{S} = (p_{id}, \delta_p, \delta_n, r_p, r_n)$ contains a path identifier $p_{id}$, references to the previous $\delta_p$ and next $\delta_n$ node ID and strand on the path encoded as deltas relative to the current node, and the ranks of the previous and next steps among the path steps on their respective nodes, $r_p$ and $r_n$.
+\textsc{ODGI} stores paths as bidirectional linked lists that allows efficient insertions, deletions, and replacements of path steps.
+These paths are encoded in a manner that exploits common properties of pangenome graphs, and its node-level data structures are organized to support efficient operation on graphs with very deep path coverage.
+The path steps $\mathcal{P} = \mathcal{S}_1 \ldots \mathcal{S}_{s}$ on each node are recorded as a series of records in a dynamic integer vector which is compressed so that only the largest integer entry is stored at full bit-width \citep{prezza2017framework}.
+Each step $\mathcal{S} = (p_{id}, \delta_p, \delta_n, r_p, r_n)$ contains a path identifier $p_{id}$, references to the previous $\delta_p$ and next $\delta_n$ node ID and strands on the path encoded as deltas relative to the current node, and the ranks of the previous $r_p$ and next $r_n$ steps among the path steps on their respective nodes.
 This path encoding scheme is similar to that used in the dynamic GBWT \citep{Siren_2019}, but differs in that the paths are not prefix-sorted.
 %It is designed to exploit the sparse and orderable nature of genome graphs.
 %If the graph is topologically sorted and node identifiers reflect this sort, the each path step will tend to connect nodes which have a small difference in identifier space.
-Each path is thus conceptually a bidirectional linked list that allows efficient insertions, deletions, and replacements of path steps, encoded in a manner that exploits common properties of pangenome graphs.
+
 %(e.g. from $n_{5} \to n_{7}$), then the maximum bit-width of the path vector will be low, resulting in good compression.
+
+% TODO add footnote mentioning odgi toolkit
+
+
 
 \subsubsection{\textsc{PackedGraph}}
 
@@ -304,7 +314,7 @@ This documentation also serves as useful introduction to the \textsc{HandleGraph
 
 Both \texttt{libhandlegraph} and \texttt{libbdsg} are open source under an MIT License.
 They are available on GitHub at \url{https://github.com/vgteam/libhandlegraph} and \url{https://github.com/vgteam/libbdsg}.
-Documentation for the two libraries, including the C++ handle graph API, \textsc{HashGraph}, \textsc{odgi}, and \textsc{PackedGraph}, is available at \url{https://bdsg.readthedocs.io} alongside the documentation for the Python binding.
+Documentation for the two libraries, including the C++ handle graph API, \textsc{HashGraph}, \textsc{ODGI}, and \textsc{PackedGraph}, is available at \url{https://bdsg.readthedocs.io} alongside the documentation for the Python binding.
 
 \end{methods}
 
@@ -324,9 +334,9 @@ Documentation for the two libraries, including the C++ handle graph API, \textsc
 	\end{center}
 	\caption{{\label{fig:hgsvc}
         \textbf{Performance on a graph of structural variants from the HGSVC.}
-        Abbreviations used here and in subsequent figures and tables: vg = \textsc{vg}, hg = \textsc{HashGraph}, og = \textsc{odgi}, pg = \textsc{PackedGraph}, xg = \textsc{xg}.
+        Abbreviations used here and in subsequent figures and tables: vg = \textsc{vg}, hg = \textsc{HashGraph}, og = \textsc{ODGI}, pg = \textsc{PackedGraph}, xg = \textsc{xg}.
         All four new graph implementations compare favorably to \textsc{vg}.
-        \textsc{PackedGraph} tends to be the most memory efficient, \textsc{HashGraph} tends to be the fastest, and \textsc{odgi} is balanced in between.
+        \textsc{PackedGraph} tends to be the most memory efficient, \textsc{HashGraph} tends to be the fastest, and \textsc{ODGI} is balanced in between.
         \textsc{xg} provides good performance on both memory usage and speed, but it is static.
         }
       }
@@ -345,7 +355,7 @@ The results generally match our expectations based on the implementations' desig
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\textwidth]{figures/build_and_load_memory.png}
+  \includegraphics[width=0.5\textwidth]{figures/build_and_load_memory_boxplot.pdf}
   \caption{
     \label{fig:prof1}
     \textbf{Memory requirements for model construction and loading.}
@@ -361,7 +371,7 @@ The results generally match our expectations based on the implementations' desig
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\textwidth]{figures/iteration_per_second.png}
+  \includegraphics[width=0.5\textwidth]{figures/iteration_per_second_boxplot.pdf}
   \caption{
     \label{fig:prof2}
     \textbf{Graph element enumeration performance.}
@@ -369,7 +379,7 @@ The results generally match our expectations based on the implementations' desig
     \textsc{HashGraph} provides the highest performance for all element iteration types on smaller graphs, but this performance falls of with larger graphs, presumably due to scaling properties of the backing hash tables.
     The same pattern can be seen for \textsc{vg}, although the overall performance is worse.
     Although it has the worst edge iteration performance, \textsc{PackedGraph} provides good performance on node and path step iteration.
-    The relative path encoding in \textsc{odgi} yields poor performance on path iteration, and node decoding overheads appear to reduce its node iteration performance, but it has good graph topology traversal performance, perhaps due to cache efficiency of the edge encoding.
+    The relative path encoding in \textsc{ODGI} yields poor performance on path iteration, and node decoding overheads appear to reduce its node iteration performance, but it has good graph topology traversal performance, perhaps due to cache efficiency of the edge encoding.
     \textsc{xg} provides excellent iteration performance in all cases.
     }
 \end{figure}
@@ -381,12 +391,12 @@ We summarize these results in Figures \ref{fig:prof1} and \ref{fig:prof2}.
 For graph construction and loading, we observe similar trends as for the HGSVC graph.
 \textsc{vg}'s performance in terms of memory usage is very poor, both during construction and load.
 For construction and load, all models exhibit largely linear scaling characteristics, outside of very small graphs where static memory overheads dominate.
-\textsc{PackedGraph} yields the best memory performance for larger graphs (which are mostly the chromosomes of the 1000 Genomes Project graph), while for the medium-sized graphs in the collection ($\sim$1~Mbp), \textsc{odgi} requires less memory.
+\textsc{PackedGraph} yields the best memory performance for larger graphs (which are mostly the chromosomes of the 1000 Genomes Project graph), while for the medium-sized graphs in the collection ($\sim$1~Mbp), \textsc{ODGI} requires less memory.
 
 For graph queries and iteration, the relative performance of the models is largely maintained across the entire range of graph sizes.
 However, we observe that the hash-based models (\textsc{vg} and \textsc{HashGraph}) have very good performance for smaller graphs (in handle and edge enumeration) but decrease in throughput as the graph size increases.
 Smaller, less dramatic decreases in performance can be seen for the other implementations.
-For path enumeration, the highest-performing methods are \textsc{xg} and \textsc{HashGraph} at approximately 10 times faster than \textsc{odgi}, whose relative path storage is costly to traverse.
+For path enumeration, the highest-performing methods are \textsc{xg} and \textsc{HashGraph} at approximately 10 times faster than \textsc{ODGI}, whose relative path storage is costly to traverse.
 
 \subsection{1000 Genome Project chromosome graphs}
 
@@ -429,7 +439,7 @@ xg &   54.3 &                9.31  &               54.2 &                 \textb
   \textbf{Performance on 1000 Genomes Project chromosome graphs.}
   Average build memory, load memory, and iteration times for graph elements for the chromosome-level graphs built from all the variants in the 1000 Genomes Project and the GRCh37 reference genome against which the variant set was originally reported.
   \textsc{vg} requires $\sim$ 20 times as much memory to load the graphs as \textsc{PackedGraph}, while even the most costly \textsc{HandleGraph} model (\textsc{HashGraph}) requires $\sim$ 1/3 as much memory.
-  In these graphs, \textsc{odgi} provides the lowest performance for handle iteration.
+  In these graphs, \textsc{ODGI} provides the lowest performance for handle iteration.
   However, in all other metrics, \textsc{vg} performs significantly worse than the other models.
 }
 \label{table:1000GPchroms}
@@ -439,7 +449,7 @@ In Table \ref{table:1000GPchroms}, we report the average memory performance of t
 We find that the best-performing method in terms of memory usage is \textsc{PackedGraph}, which consumes around $1/20$th the memory of \textsc{vg} per base-pair of graph in the 1000GP set.
 However, it provides significantly better iteration performance for nodes (handles), edges, and path steps.
 \textsc{HashGraph} and \textsc{xg} have similar iteration performance, but \textsc{xg}, by virtue of its use of compressed, static data structures, requires less than half as much memory.
-\textsc{odgi} optimized for efficient dynamic operations on graphs with higher path coverage, and in general is not as performant as other methods on this set.
+\textsc{ODGI} optimized for efficient dynamic operations on graphs with higher path coverage, and in general is not as performant as other methods on this set.
 
 
 \section{Discussion}
