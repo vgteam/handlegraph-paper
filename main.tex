@@ -271,7 +271,7 @@ Many of the integer vectors tend to also have entries that are highly correlated
  Since the differences within a window tend to be small, this encoding keeps the bit-width for each window small as well.
 
 The data associated with each node is recorded in several compressed integer vectors (at the same index in each).
-This contrasts to \textsc{xg}, which encodes data in a single vector to improve cache efficiency.
+This contrasts to \textsc{xg} and \textsc{odgi}, which encode data in a single vector to improve cache efficiency.
 Recording only one homogenous data type in a vector increases the correlation between neighboring values, which in turn improves compression.
 The adjacency list for the graph, the steps that each node is found on, and the paths themselves are represented using linked lists.
 The linked lists are expressed using the same bit-compressed integer vectors, where pointers are created by treating some integer entries as indexes into the vector itself.
@@ -279,7 +279,7 @@ This pointer encoding also guarantees the technical condition that the $i$-th en
 The linked lists that occur on every node (the adjacency lists and node step lists) are included in a single vector across all nodes.
 This serves two purposes.
 First, the windowed compression scheme in the integer vectors is inefficient if lists are smaller than the window size, as is often the case.
-Second, neighboring nodes often connect to the same nodes and are found on the same paths as each other, so the values they store are also highly correlated.
+Second, due to the local partial order that is found in many pangenome graphs, neighboring nodes often connect to the same nodes and are found on the same paths as each other, so the values they store are also highly correlated.
 %Most of its component data structures are---conceptually speaking---linked lists.
 %However, they are implemented using vectors of bit-compressed integers, where pointers are produced by treating some of the integer entries as indexes into the vector that contains them.
 %The bit-width can be determined dynamically.
